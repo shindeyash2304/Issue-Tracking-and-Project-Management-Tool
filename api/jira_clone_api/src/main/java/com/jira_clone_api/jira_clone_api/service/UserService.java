@@ -2,6 +2,7 @@ package com.jira_clone_api.jira_clone_api.service;
 
 import com.jira_clone_api.jira_clone_api.models.Users;
 import com.jira_clone_api.jira_clone_api.repository.UserRepo;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,12 +29,19 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public String verify(Users user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+    public Cookie verify(String email, String password) throws Exception {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(user.getEmail());
+            String token = jwtService.generateToken(email);
+            Cookie c = new Cookie("CWA-JIRA-CLONE-SESSION", token);
+            c.setPath("/");
+            c.setHttpOnly(true);
+            c.setMaxAge(60 * 60 * 24 * 30); // 30 days
+            c.setAttribute("SameSite", "Strict");
+//            c.setSecure(true);
+            return c;
         } else {
-            return "Authentication failed";
+            throw new Exception("Authentication failed");
         }
     }
 }

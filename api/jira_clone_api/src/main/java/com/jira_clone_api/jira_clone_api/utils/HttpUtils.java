@@ -12,6 +12,7 @@ public class HttpUtils {
         if (cookie.getMaxAge() > 0) sb.append("; Max-Age=").append(cookie.getMaxAge());
         if (cookie.getSecure()) sb.append("; Secure");
         if (cookie.isHttpOnly()) sb.append("; HttpOnly");
+        if(cookie.getAttribute("SameSite") != null) sb.append("; SameSite=").append(cookie.getAttribute("SameSite"));
 
         return sb.toString();
     }

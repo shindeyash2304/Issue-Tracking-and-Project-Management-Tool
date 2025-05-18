@@ -1,9 +1,12 @@
 package com.jira_clone_api.jira_clone_api.controllers;
 
+import com.jira_clone_api.jira_clone_api.dto.auth.LoginDto;
+import com.jira_clone_api.jira_clone_api.dto.auth.RegisterDto;
 import com.jira_clone_api.jira_clone_api.models.Users;
 import com.jira_clone_api.jira_clone_api.service.UserService;
 import com.jira_clone_api.jira_clone_api.utils.HttpUtils;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +14,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
+    @Autowired
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<Users> register(@RequestBody Users user){
+    public ResponseEntity<Users> register(@RequestBody RegisterDto user){
         try{
-            Users createdUser = userService.register(user);
+            Users createdUser = userService.register(new Users(user.getEmail(), user.getPassword(), user.getName()));
 
             return ResponseEntity.status(201).body(createdUser);
         } catch (Exception e){
@@ -33,7 +39,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> login(@RequestBody Users user){
+    public ResponseEntity<Map<String,String>> login(@RequestBody LoginDto user){
+        System.out.println(user.toString());
         Map<String,String> responseBody = new HashMap<>();
         try{
             Cookie c = userService.verify(user.getEmail(), user.getPassword());
@@ -56,5 +63,15 @@ public class UserController {
         @GetMapping("/test")
         public ResponseEntity<String> test() {
             return ResponseEntity.ok("Test successful");
+        }
+
+        @GetMapping("/profile")
+        public ResponseEntity<Users> getUserProfile(HttpServletRequest request) {
+            Users user = userService.getUserByEmail(request);
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
         }
 }

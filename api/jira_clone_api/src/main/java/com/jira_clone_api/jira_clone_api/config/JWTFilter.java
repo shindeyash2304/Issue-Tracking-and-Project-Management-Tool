@@ -4,6 +4,7 @@ import com.jira_clone_api.jira_clone_api.service.JWTService;
 import com.jira_clone_api.jira_clone_api.service.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,27 +17,39 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
-    @Autowired
     private JWTService jwtService;
+    private ApplicationContext context;
 
     @Autowired
-    private ApplicationContext context;
+    public JWTFilter(JWTService jwtService, ApplicationContext context) {
+        this.jwtService = jwtService;
+        this.context = context;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
+        String path = request.getRequestURI();
+        return path.equals("/login") || path.equals("/register") || path.equals("/v3/api-docs");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
+        System.out.println("Cookies: " + Arrays.toString(cookies));
+        Cookie auth = Arrays.stream(cookies).filter(cookie -> Objects.equals(cookie.getName(), "CWA-JIRA-CLONE-SESSION")).findFirst().orElse(null);
         String token = null;
         String username = null;
-         if(authHeader!=null && authHeader.startsWith("Bearer "))
+         if(auth!=null)
          {
-            token = authHeader.substring(7);
-            username = jwtService.extractUserName(token);
+             token = auth.getValue();
+             username = jwtService.extractUserName(token);
          }
-
          if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
 
              UserDetails userDetails = context.getBean(MyUserDetailsService.class).loadUserByUsername(username);

@@ -7,9 +7,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
@@ -18,4 +15,10 @@ public class Users {
     private String email;
     private String password;
     private String name;
+
+    public Users(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+    }
 }

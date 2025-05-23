@@ -17,4 +17,7 @@ public class Workspaces {
     private String name;
     @Column(length = 50, nullable = false)
     private String userId;
+    private String imageUrl;
+    @Column(length = 10, nullable = false, unique = true)
+    private String inviteCode;
 }

@@ -9,12 +9,15 @@ import lombok.*;
 @NoArgsConstructor
 public class Users {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private int id;
-    @Column(unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID )
+    private String id;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String name;
+    private String imageKey;
 
     public Users(String email, String password, String name) {
         this.email = email;

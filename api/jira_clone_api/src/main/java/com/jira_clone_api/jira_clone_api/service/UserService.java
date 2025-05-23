@@ -58,7 +58,6 @@ public Users getUserByEmail(HttpServletRequest request) {
             String email = null;
             if (auth != null) {
                 token = auth.getValue();
-                System.out.println("Token: " + token);
                 email = jwtService.extractUserName(token);
             }
             return userRepo.findByEmail(email);

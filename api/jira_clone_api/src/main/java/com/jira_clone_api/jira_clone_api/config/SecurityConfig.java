@@ -35,10 +35,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("login","register", "v3/api-docs").permitAll()
+                        .requestMatchers("login","register", "v3/api-docs", "/image/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

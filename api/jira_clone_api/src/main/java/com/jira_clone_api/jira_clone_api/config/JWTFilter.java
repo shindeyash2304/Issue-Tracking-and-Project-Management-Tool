@@ -35,13 +35,12 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
         String path = request.getRequestURI();
-        return path.equals("/login") || path.equals("/register") || path.equals("/v3/api-docs");
+        return path.equals("/login") || path.equals("/register") || path.equals("/v3/api-docs") || path.startsWith("/image") || path.startsWith("/h2-console");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
-        System.out.println("Cookies: " + Arrays.toString(cookies));
         Cookie auth = Arrays.stream(cookies).filter(cookie -> Objects.equals(cookie.getName(), "CWA-JIRA-CLONE-SESSION")).findFirst().orElse(null);
         String token = null;
         String username = null;

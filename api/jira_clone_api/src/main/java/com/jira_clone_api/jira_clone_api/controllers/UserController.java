@@ -33,14 +33,12 @@ public class UserController {
 
             return ResponseEntity.status(201).body(createdUser);
         } catch (Exception e){
-            System.out.println(e.getMessage());
             return ResponseEntity.status(400).body(null);
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String,String>> login(@RequestBody LoginDto user){
-        System.out.println(user.toString());
         Map<String,String> responseBody = new HashMap<>();
         try{
             Cookie c = userService.verify(user.getEmail(), user.getPassword());

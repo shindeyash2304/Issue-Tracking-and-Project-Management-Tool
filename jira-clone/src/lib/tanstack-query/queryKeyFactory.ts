@@ -11,6 +11,7 @@ export namespace QueryKeyFactory {
 
     export namespace Workspace{
         const workspacePrefix = "workspace"
-        export const all = () => [workspacePrefix, "all"]
+        export const all = () => [workspacePrefix, "all"];
+        export const byId = (id: string) => [workspacePrefix, id];
     }
 }

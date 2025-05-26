@@ -15,10 +15,11 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/pro-solid-svg-icons/faImage';
-import { useWorkspaces } from '@/lib/tanstack-query/queries/useWorkspace';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function CreateWorkspaceForm({onCancel}:{onCancel?: () => void}) {
-
+    const router = useRouter();
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     const form = useForm<z.infer<typeof createWorkspaceSchema>>({
@@ -48,7 +49,12 @@ export default function CreateWorkspaceForm({onCancel}:{onCancel?: () => void}) 
                     if (data.image) {
                         formData.append('image', data.image);
                     }
-                    createWorkspaceMutation.mutate(formData);
+                    createWorkspaceMutation.mutate(formData, {
+                        onSuccess: (workspace) => {
+                            form.reset();
+                            router.push(`/workspaces/${workspace.id}`);
+                        }
+                    });
                 })}>
                     <div className="flex flex-col gap-y-4">
                         <FormField control={form.control} name='name' render={({ field }) => (
@@ -86,7 +92,16 @@ export default function CreateWorkspaceForm({onCancel}:{onCancel?: () => void}) 
                                             form.setValue('image', file);
                                         }
                                     }} type='file' className='hidden' accept='.jpg, .png, .svg, .jpeg' />
-                                    <Button type='button' disabled={createWorkspaceMutation.isPending} variant={'teritrary'} size={'xs'} className='w-fit mt-2' onClick={() => inputRef.current?.click()}>Upload Image</Button>
+                                    {field.value ? (
+                                        <Button type='button' disabled={createWorkspaceMutation.isPending} variant={'destructive'} size={'xs'} className='w-fit mt-2' onClick={() => {
+                                            field.onChange(null);
+                                            if(inputRef.current){
+                                                inputRef.current.value = ""
+                                            }
+                                        }}>Remove Image</Button>
+                                    ) : (
+                                        <Button type='button' disabled={createWorkspaceMutation.isPending} variant={'teritrary'} size={'xs'} className='w-fit mt-2' onClick={() => inputRef.current?.click()}>Upload Image</Button>
+                                    )}
                                 </div>
 
                              </div>   
@@ -95,7 +110,7 @@ export default function CreateWorkspaceForm({onCancel}:{onCancel?: () => void}) 
                     </div>
                     <DottedSeparator className='py-7' />
                     <div className='flex items-center justify-between'>
-                        <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={createWorkspaceMutation.isPending}>Cancel</Button>
+                        <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={createWorkspaceMutation.isPending} className={cn(!onCancel && "invisible")}>Cancel</Button>
                         <Button size="lg" variant={"primary"} disabled={createWorkspaceMutation.isPending}>Create Workspace</Button>
                     </div>
                 </form>

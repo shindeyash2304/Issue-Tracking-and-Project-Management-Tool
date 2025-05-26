@@ -15,12 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WorkspacesService {
 
     private final WorkspacesRepo workspacesRepo;
-    private final FileServiceImpl fileService;
+    private final FileService fileService;
     private final MembersRepo membersRepo;
 
     @Autowired
@@ -57,5 +58,98 @@ List<String> workspaceIds = memberships.stream().map(Members::getWorkspaceId).to
     return workspacesRepo.findAllById(workspaceIds);
     }
 
+    public Workspaces updateWorkspace(String workspaceId,@Nullable String name,@Nullable MultipartFile image, Users user) throws Exception{
+        Optional<Members> member = membersRepo.findByUserIdAndWorkspaceId(user.getId(), workspaceId);
+        if(member.isEmpty()){
+                throw new Exception("Member not found");
+            } else if(member.get().getRole() != WorkspaceMemberRole.ADMIN){
+                throw new Exception("Unauthorised");
+            }
 
+        Optional<Workspaces> workspace = workspacesRepo.findById(workspaceId);
+
+        if(workspace.isEmpty()){
+            throw new Exception("Failed to find workspace");
+        }
+
+        if(name!=null){
+            workspace.get().setName(name);
+        }
+
+        if(image!=null){
+            String fileName = fileService.updateFile(image, workspace.get().getImageUrl(), "workspaces");
+            workspace.get().setImageUrl(fileName);
+        }
+
+        return workspacesRepo.save(workspace.get());
+    }
+
+    public Optional<Workspaces> getWorkspaceById(String workspaceId, Users user) throws Exception {
+        Optional<Members> member = membersRepo.findByUserIdAndWorkspaceId(user.getId(), workspaceId);
+
+        if(member.isEmpty()){
+            throw new Exception("Unauthorized");
+        } else {
+            return workspacesRepo.findById(workspaceId);
+        }
+
+    }
+
+    @Transactional
+    public void deleteWorkspace(String workspaceId, Users user) throws Exception {
+        Optional<Members> member = membersRepo.findByUserIdAndWorkspaceId(user.getId(), workspaceId);
+
+        if(member.isEmpty() || member.get().getRole()!=WorkspaceMemberRole.ADMIN){
+            throw new Exception("Unauthorized");
+        }
+        //Todo: Delete projects, issues, and other related data
+        membersRepo.deleteByWorkspaceId(workspaceId);
+        workspacesRepo.deleteById(workspaceId);
+
+    }
+
+    public String updateInviteCode(String workspaceId, Users user) throws Exception {
+        Optional<Members> member = membersRepo.findByUserIdAndWorkspaceId(user.getId(), workspaceId);
+
+        if(member.isEmpty() || member.get().getRole()!=WorkspaceMemberRole.ADMIN){
+            throw new Exception("Unauthorized");
+        }
+
+        Optional<Workspaces> workspace = workspacesRepo.findById(workspaceId);
+        if(workspace.isEmpty()){
+            throw new Exception("Failed to find workspace");
+        }
+
+        String newInviteCode = SecureRandomString.generate(10);
+
+        workspace.get().setInviteCode(newInviteCode);
+
+        workspacesRepo.save(workspace.get());
+
+        return newInviteCode;
+
+    }
+
+    public void addUserToWorkspace(String workspaceId, String inviteCode, Users user) {
+        Optional<Workspaces> workspace = workspacesRepo.findById(workspaceId);
+        if (workspace.isEmpty() || !workspace.get().getInviteCode().equals(inviteCode)) {
+            throw new RuntimeException("Invalid workspace or invite code");
+        }
+
+        Optional<Members> existingMember = membersRepo.findByUserIdAndWorkspaceId(user.getId(), workspaceId);
+        if (existingMember.isPresent()) {
+            throw new RuntimeException("User already a member of this workspace");
+        }
+
+        Members newMember = new Members(user.getId(), workspaceId, WorkspaceMemberRole.MEMBER);
+        membersRepo.save(newMember);
+    }
+
+    public String getWorkspaceName(String workspaceId) {
+        Optional<Workspaces> workspace = workspacesRepo.findById(workspaceId);
+        if (workspace.isEmpty()) {
+            throw new RuntimeException("Workspace not found");
+        }
+        return workspace.get().getName();
+    }
 }

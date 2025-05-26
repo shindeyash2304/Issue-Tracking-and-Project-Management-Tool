@@ -22,3 +22,20 @@ export const useWorkspaces = () => {
         staleTime: 60 * 60 * 1000, // 60 minutes
     })
 }
+
+export const useWorkspace = (workspaceId: string) => {
+    return useQuery({
+        queryKey: QueryKeyFactory.Workspace.byId(workspaceId),
+        queryFn: async () => {
+            const response = await fetch(`/api/workspaces/${workspaceId}`, {
+                method: "GET",
+                credentials: 'include',
+            })
+            if (!response.ok) {
+                throw new Error("Failed to fetch workspace")
+            }
+            return await response.json()
+        },
+        staleTime: 60 * 60 * 1000, // 60 minutes
+    });  
+}

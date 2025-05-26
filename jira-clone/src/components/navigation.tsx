@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import { faHouseWindow as faHouseWindowSolid } from '@fortawesome/pro-solid-svg-icons/faHouseWindow'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,6 +11,8 @@ import { faUsers as faUsersSolid } from '@fortawesome/pro-solid-svg-icons/faUser
 import { faUsers as faUsersRegular } from '@fortawesome/pro-regular-svg-icons/faUsers'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { usePathname } from 'next/navigation';
 
 const routes = [
     {
@@ -39,20 +42,24 @@ const routes = [
 ]
 
 export default function Navigation() {
-  return (
-    <div className='flex flex-col'>
-        {routes.map((route) => <NavigationItem key={route.label} {...route} />)}
-    </div>
-  )
+
+    return (
+        <div className='flex flex-col'>
+            {routes.map((route) => <NavigationItem key={route.label} {...route} />)}
+        </div>
+    )
 }
 
 function NavigationItem({ label, href, outlineIcon, activeIcon }: { label: string, href: string, outlineIcon: any, activeIcon: any }) {
-    const isActive = false;
+    const workspaceId = useWorkspaceId();
+    const pathname = usePathname();
+    const fullHref = `/workspaces/${workspaceId}/${href}`
+    const isActive = pathname === fullHref;
     const icon = isActive ? activeIcon : outlineIcon;
     return (
-        <Link href={href}>
+        <Link href={fullHref}>
             <div className={cn("flex items-center gap-2.5 p-2.5 rounded-md font-medium hover:text-primary transition text-neutral-500", isActive ? "bg-white shadow-sm hover:opacity-100 text-primary" : "")}>
-                <FontAwesomeIcon icon={outlineIcon} className='size-5 text-neutral-500'  />
+                <FontAwesomeIcon icon={icon} className='size-5 text-neutral-500' />
                 {label}
             </div>
         </Link>

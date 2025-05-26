@@ -6,11 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -21,11 +20,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -57,6 +54,26 @@ public class FileServiceImpl implements FileService {
         }
         file.delete();
 
+        return fileName;
+    }
+
+    @Override
+    public String updateFile(MultipartFile multipartFile, @Nullable String name, String directory) throws IOException {
+        String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+        String fileName = name != null ? name : directory + "/" + UUID.randomUUID().toString() + "." + extension;
+
+        FileUtils.createFolderIfNotExists(directory);
+        File file = new File(fileName);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)){
+            fileOutputStream.write(multipartFile.getBytes());
+        }
+
+        try{
+            PutObjectResponse putObjectResponse = this.s3Client.putObject(req -> req.bucket(this.bucketName).key(fileName), AsyncRequestBody.fromFile(Paths.get(file.getPath()))).join();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+        file.delete();
         return fileName;
     }
 

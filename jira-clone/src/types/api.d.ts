@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["getAllWorkspaceMembers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/login": {
         parameters: {
             query?: never;
@@ -98,6 +114,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["updateInviteCode"];
+        trace?: never;
+    };
+    "/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["removeMember"];
+        options?: never;
+        head?: never;
+        patch: operations["updateMember"];
         trace?: never;
     };
     "/workspaces/{workspaceId}/name": {
@@ -168,31 +200,53 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Workspaces: {
-            id?: string;
-            name?: string;
-            userId?: string;
-            imageUrl?: string;
-            inviteCode?: string;
-        };
-        AddUserDto: {
-            inviteCode?: string;
-        };
-        RegisterDto: {
-            name?: string;
-            email?: string;
-            password?: string;
+        Members: {
+            id: string;
+            userId: string;
+            workspaceId: string;
+            /** @enum {string} */
+            role: "ADMIN" | "MEMBER";
+            workspace: components["schemas"]["Workspaces"];
+            user: components["schemas"]["Users"];
         };
         Users: {
-            id?: string;
-            email?: string;
-            password?: string;
-            name?: string;
+            id: string;
+            email: string;
+            password: string;
+            name: string;
             imageKey?: string;
+            members: components["schemas"]["Members"][];
+        };
+        Workspaces: {
+            id: string;
+            name: string;
+            userId: string;
+            imageUrl?: string;
+            inviteCode: string;
+            members: components["schemas"]["Members"][];
+        };
+        AddUserDto: {
+            inviteCode: string;
+        };
+        RegisterDto: {
+            name: string;
+            email: string;
+            password: string;
+        };
+        GetAllMembersDto: {
+            workspaceId: string;
+        };
+        ReturnAllMembersProfileDto: {
+            member: components["schemas"]["Members"];
+            user: components["schemas"]["Users"];
         };
         LoginDto: {
-            email?: string;
-            password?: string;
+            email: string;
+            password: string;
+        };
+        UpdateMemberDto: {
+            /** @enum {string} */
+            role: "ADMIN" | "MEMBER";
         };
     };
     responses: never;
@@ -298,6 +352,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Users"];
+                };
+            };
+        };
+    };
+    getAllWorkspaceMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GetAllMembersDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReturnAllMembersProfileDto"][];
                 };
             };
         };
@@ -421,6 +499,54 @@ export interface operations {
                 };
                 content: {
                     "*/*": string;
+                };
+            };
+        };
+    };
+    removeMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    updateMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMemberDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Members"];
                 };
             };
         };

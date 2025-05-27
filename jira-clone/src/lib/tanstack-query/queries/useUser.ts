@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query"
 import { QueryKeyFactory } from "../queryKeyFactory"
 import { paths } from "@/types/api";
 
-type ResponseType = paths["/profile"]["get"]["responses"]["200"]["content"]["*/*"]
 
 export const useUser = () => {
+    type ResponseType = paths["/profile"]["get"]["responses"]["200"]["content"]["*/*"];
+
     return useQuery<ResponseType, Error>({
         queryKey: QueryKeyFactory.User.profile(),
         queryFn: async () => {

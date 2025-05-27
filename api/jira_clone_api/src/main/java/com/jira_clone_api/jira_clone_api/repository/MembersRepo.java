@@ -10,4 +10,6 @@ public interface MembersRepo extends JpaRepository<Members, String> {
     List<Members> findByUserId(String userId);
     Optional<Members> findByUserIdAndWorkspaceId(String userId, String workspaceId);
     void deleteByWorkspaceId(String workspaceId);
+
+    List<Members> findByWorkspaceId(String workspaceId);
 }

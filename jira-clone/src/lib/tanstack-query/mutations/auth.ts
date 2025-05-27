@@ -13,7 +13,7 @@ export const useLoginMutation = () => {
     const queryClient = useQueryClient();
     const router = useRouter();
     return useMutation<ResponseType, Error, RequestType>({
-        mutationFn: async (data: operations["login"]["requestBody"]["content"]["application/json"]) => {
+        mutationFn: async (data) => {
             const response = await fetch("/api/login", {
                 method: "POST",
                 headers: {
@@ -45,7 +45,9 @@ export const useSignUpMutation = () => {
     type path = paths["/register"]["post"]
     type ResponseType = path["responses"]["200"]["content"]["*/*"]
     type RequestType = path["requestBody"]["content"]["application/json"]
-    const queryClient = useQueryClient();
+
+    const router = useRouter();
+
     return useMutation<ResponseType,Error,RequestType>({
         mutationFn: async (data) => {
             const response = await fetch("/api/register", {
@@ -63,10 +65,10 @@ export const useSignUpMutation = () => {
         },
         onSuccess: () => {
             toast.success("Signed up successfully");
+            router.push("/sign-in");
         },
         onError: (error) => {
             toast.error("Sign up failed");
-            console.error("Sign up failed:", error);
         },
     })
 }

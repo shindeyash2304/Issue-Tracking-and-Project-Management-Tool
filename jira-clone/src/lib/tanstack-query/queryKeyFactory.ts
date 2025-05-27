@@ -14,4 +14,14 @@ export namespace QueryKeyFactory {
         export const all = () => [workspacePrefix, "all"];
         export const byId = (id: string) => [workspacePrefix, id];
     }
+
+    export namespace Members{
+        const membersPrefix = "members";
+        export const byWorkspaceId = (workspaceId: string) => {
+            return [membersPrefix, workspaceId];
+        }
+        export const byWorkspaceIdAndUserId = (workspaceId: string, userId: string) => {
+            return [membersPrefix, workspaceId, userId];
+        }
+    }
 }

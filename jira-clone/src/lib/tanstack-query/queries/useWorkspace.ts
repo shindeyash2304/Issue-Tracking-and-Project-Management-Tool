@@ -5,15 +5,15 @@ import { paths } from "@/types/api"
 export const useWorkspaces = () => {
     type path = paths["/workspaces"]["get"]
     type ResponseType = path["responses"]["200"]["content"]["*/*"]
-    type RequestType = path["requestBody"]
+
     return useQuery<ResponseType, Error>({
         queryKey: QueryKeyFactory.Workspace.all(),
         queryFn: async () => {
-            const response =  await fetch("/api/workspaces",{
+            const response = await fetch("/api/workspaces", {
                 method: "GET",
                 credentials: 'include',
             })
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error("")
             }
 
@@ -24,7 +24,10 @@ export const useWorkspaces = () => {
 }
 
 export const useWorkspace = (workspaceId: string) => {
-    return useQuery({
+    type path = paths["/workspaces/{workspaceId}"]["get"];
+    type ResponseType = path["responses"]["200"]["content"]["*/*"];
+
+    return useQuery<ResponseType, Error>({
         queryKey: QueryKeyFactory.Workspace.byId(workspaceId),
         queryFn: async () => {
             const response = await fetch(`/api/workspaces/${workspaceId}`, {
@@ -37,5 +40,5 @@ export const useWorkspace = (workspaceId: string) => {
             return await response.json()
         },
         staleTime: 60 * 60 * 1000, // 60 minutes
-    });  
+    });
 }

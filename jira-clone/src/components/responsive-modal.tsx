@@ -1,5 +1,5 @@
 import { useMedia } from 'react-use';
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Drawer, DrawerContent } from '@/components/ui/drawer'

@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class UserController {
         try{
             Users createdUser = userService.register(new Users(user.getEmail(), user.getPassword(), user.getName()));
 
-            return ResponseEntity.status(201).body(createdUser);
+            return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(createdUser);
         } catch (Exception e){
             return ResponseEntity.status(400).body(null);
         }
@@ -48,7 +49,7 @@ public class UserController {
 
             responseBody.put("succcess", "true");
             responseBody.put("message", "Login successful");
-            return ResponseEntity.status(200).headers(headers).body(responseBody);
+            return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).headers(headers).body(responseBody);
 
         } catch (Exception e) {
             responseBody.put("success", "false");
@@ -67,7 +68,7 @@ public class UserController {
         public ResponseEntity<Users> getUserProfile(HttpServletRequest request) {
             Users user = userService.getUserByEmail(request);
             if (user != null) {
-                return ResponseEntity.ok(user);
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(user);
             } else {
                 return ResponseEntity.status(404).body(null);
             }

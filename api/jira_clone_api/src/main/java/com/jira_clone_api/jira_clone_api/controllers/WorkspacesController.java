@@ -33,13 +33,13 @@ public class WorkspacesController {
     public ResponseEntity<Workspaces> createWorkspace(@RequestParam("name") String name, @RequestParam(value = "image", required = false) MultipartFile image, HttpServletRequest request) {
         Users user = userService.getUserByEmail(request);
         Workspaces workspace = workspacesService.createWorkspace(name, image, user.getId());
-        return ResponseEntity.ok().body(workspace);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspace);
     }
 
     @GetMapping("")
     public ResponseEntity<List<Workspaces>> getWorkspaces(HttpServletRequest request){
         Users user = userService.getUserByEmail(request);
-        return ResponseEntity.ok().body(workspacesService.getWorkspaces(user));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspacesService.getWorkspaces(user));
     }
 
     @PatchMapping(value = "/{workspaceId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -47,7 +47,7 @@ public class WorkspacesController {
         try{
             Users user = userService.getUserByEmail(request);
             Workspaces updatedWorkspace = workspacesService.updateWorkspace(workspaceId, workspaceName, image, user);
-            return ResponseEntity.ok().body(updatedWorkspace);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedWorkspace);
         } catch(Exception e){
             if(Objects.equals(e.getMessage(), "Unauthorised")){
             return ResponseEntity.status(403).body(null);
@@ -62,7 +62,7 @@ public class WorkspacesController {
         Users user = userService.getUserByEmail(request);
         try {
             return workspacesService.getWorkspaceById(workspaceId, user)
-                    .map(workspace -> ResponseEntity.ok().body(workspace))
+                    .map(workspace -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspace))
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -74,7 +74,7 @@ public class WorkspacesController {
         Users user = userService.getUserByEmail(request);
         try{
         workspacesService.deleteWorkspace(workspaceId, user);
-        return ResponseEntity.ok().body("Workspace deleted successfully");
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Workspace deleted successfully");
         } catch (Exception e){
             System.out.println(e);
             return ResponseEntity.internalServerError()
@@ -87,7 +87,7 @@ public class WorkspacesController {
         Users user = userService.getUserByEmail(request);
         try {
             String newInviteCode = workspacesService.updateInviteCode(workspaceId, user);
-            return ResponseEntity.ok().body(newInviteCode);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(newInviteCode);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.internalServerError().body("Failed to update invite code: " + e.getMessage());
@@ -99,7 +99,7 @@ public class WorkspacesController {
         Users user = userService.getUserByEmail(request);
         try {
             workspacesService.addUserToWorkspace(workspaceId, addUserDto.getInviteCode(), user);
-            return ResponseEntity.ok().body("Joined workspace successfully");
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Joined workspace successfully");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             if(e.getMessage().equals("Invalid workspace or invite code") || e.getMessage().equals("User already a member of this workspace")){
@@ -113,7 +113,7 @@ public class WorkspacesController {
     public ResponseEntity<String> getWorkspaceName(@PathVariable("workspaceId") String workspaceId, HttpServletRequest request) {
         Users user = userService.getUserByEmail(request);
         try {
-            return ResponseEntity.ok().body(workspacesService.getWorkspaceName(workspaceId));
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspacesService.getWorkspaceName(workspaceId));
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

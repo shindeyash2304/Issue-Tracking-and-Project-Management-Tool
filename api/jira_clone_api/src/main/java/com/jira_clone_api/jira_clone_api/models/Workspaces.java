@@ -19,7 +19,7 @@ public class Workspaces {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @NotNull
-    @Column(length = 255,nullable = false)
+    @Column(length = 255, nullable = false)
     private String name;
     @NotNull
     @Column(length = 50, nullable = false)
@@ -32,4 +32,7 @@ public class Workspaces {
     @OneToMany(mappedBy = "workspace")
     @JsonManagedReference
     private List<Members> members;
+    @OneToMany(mappedBy = "workspace")
+    @JsonManagedReference
+    private List<Project> projects;
 }

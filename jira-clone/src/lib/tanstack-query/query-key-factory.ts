@@ -24,4 +24,10 @@ export namespace QueryKeyFactory {
       return [membersPrefix, workspaceId, userId];
     }
   }
+
+  export namespace Projects {
+    const projectsPrefix = "projects";
+    export const byWorkspaceId = (workspaceId: string) => [projectsPrefix, workspaceId];
+    export const byProjectId = (projectId: string) => [projectsPrefix, projectId];
+  }
 }

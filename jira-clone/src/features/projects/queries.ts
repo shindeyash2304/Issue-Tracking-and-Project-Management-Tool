@@ -1,15 +1,14 @@
 "use server";
 
-import { cookies } from "next/headers"
+import { cookies } from "next/headers";
 
-export const getCurrentUser = async () => {
+export const getProject = async (projectId: string) => {
   const cks = await cookies();
   const session = cks.get("CWA-JIRA-CLONE-SESSION");
   if (!session) {
     return null;
   }
-
-  const response = await fetch(`http://localhost:3000/api/profile`, {
+  const response = await fetch(`http://localhost:3000/api/projects/${projectId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -19,11 +18,8 @@ export const getCurrentUser = async () => {
     credentials: "include",
   });
   if (!response.ok) {
-    if(response.status===403)return null;
-
     throw new Error("Network response was not ok");
   }
   const res = await response.json();
   return res;
-
 }

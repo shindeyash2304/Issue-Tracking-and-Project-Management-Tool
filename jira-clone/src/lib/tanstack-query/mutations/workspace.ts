@@ -35,6 +35,7 @@ export const useCreateWorkspaceMutation = () => {
     }
   })
 }
+
 export const useEditWorkspaceMutation = (workspaceId: string) => {
   type path = paths["/workspaces/{workspaceId}"]["patch"];
   type ResponseType = Required<path["responses"]["200"]["content"]["*/*"]>;

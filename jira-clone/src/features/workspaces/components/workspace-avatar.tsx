@@ -8,7 +8,7 @@ export default function WorkspaceAvatar({ className, name, imageUrl }: { imageUr
   if (imageUrl) {
     return (
       <div className={cn('size-10 relative rounded-md overflow-hidden', className)}>
-        <Image src={getImageUrl(imageUrl)} alt={name} fill className='object-cover' />
+        <Image src={getImageUrl(imageUrl)!} alt={name} fill className='object-cover' />
       </div>
     )
   }

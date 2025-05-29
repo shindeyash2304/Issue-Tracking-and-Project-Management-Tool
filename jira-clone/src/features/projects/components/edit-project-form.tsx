@@ -8,14 +8,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/pro-solid-svg-icons/faImage';
 import { useRouter } from 'next/navigation';
 import { faArrowLeft } from '@fortawesome/pro-regular-svg-icons/faArrowLeft';
-import { faCopy } from '@fortawesome/pro-regular-svg-icons/faCopy';
-import { toast } from 'sonner';
 import { useRef } from 'react';
 
-import { editWorkspaceSchema } from '@/features/workspaces/schema';
-import { useDeleteWorkspaceMutation, useEditWorkspaceMutation, useResetInviteCodeMutation } from '@/lib/tanstack-query/mutations/workspace';
+import { editProjectSchema } from '@/features/projects/schema';
+import { useDeleteProjectMutation, useEditProjectMutation } from '@/lib/tanstack-query/mutations/project';
 import { cn, getImageUrl } from '@/lib/utils';
-import type { Workspace } from '@/features/workspaces/types';
+import type { Project } from '@/features/projects/types';
 import { useConfirm } from '@/lib/hooks/use-confirm';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,26 +23,20 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
-export default function EditWorkspaceForm({ onCancel, initialValues }: { onCancel?: () => void, initialValues: Workspace }) {
+export default function EditProjectForm({ onCancel, initialValues }: { onCancel?: () => void, initialValues: Project }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [DeleteDialog, confirmDelete] = useConfirm(
-    "Delete workspace",
+    "Delete project",
     "This action cannot be undone",
     "destructive"
   );
 
-  const [ResetDialog, confirmReset] = useConfirm(
-    "Reset Invite Link",
-    "This will generate a new invite link for your workspace. The old link will no longer work.",
-    "destructive"
-  );
-
-  const form = useForm<z.infer<typeof editWorkspaceSchema>>({
-    resolver: zodResolver(editWorkspaceSchema),
+  const form = useForm<z.infer<typeof editProjectSchema>>({
+    resolver: zodResolver(editProjectSchema),
     defaultValues: {
       name: initialValues.name,
-      image: initialValues.imageUrl ?? ""
+      image: initialValues.imageKey ?? ""
     }
   })
 
@@ -53,39 +45,18 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
 
     if (!ok) return;
 
-    deleteWorkspaceMutation.mutate(undefined);
+    deleteProjectMutation.mutate(undefined);
   }
 
-  const handleReset = async () => {
-    const ok = await confirmReset();
-
-    if (!ok) return;
-
-    resetInviteCodeMutation.mutate(undefined, {
-      onSettled: () => {
-        router.refresh();
-      }
-    });
-  }
-
-  const editWorkspaceMutation = useEditWorkspaceMutation(initialValues.id);
-  const deleteWorkspaceMutation = useDeleteWorkspaceMutation(initialValues.id);
-  const resetInviteCodeMutation = useResetInviteCodeMutation(initialValues.id);
-
-  const inviteUrl = `${window.location.origin}/workspaces/${initialValues.id}/join/${initialValues.inviteCode}`;
-
-  function copyInviteLink() {
-    navigator.clipboard.writeText(inviteUrl).then(() =>
-      toast.success("Invite link copied to clipboard"));
-  }
+  const editProjectMutation = useEditProjectMutation(initialValues.workspaceId, initialValues.id);
+  const deleteProjectMutation = useDeleteProjectMutation(initialValues.id);
 
   return (
     <div className='flex flex-col gap-y-4'>
       <DeleteDialog />
-      <ResetDialog />
       <Card className='w-full h-full border-none shadow-none'>
         <CardHeader className='flex flex-row items-center gap-x-4 p-7 space-y-0'>
-          <Button size={"sm"} variant={'secondary'} onClick={onCancel ? onCancel : () => router.push(`/workspaces/${initialValues.id}`)}>
+          <Button size={"sm"} variant={'secondary'} onClick={onCancel ? onCancel : () => router.push(`/workspaces/${initialValues.workspaceId}/projects/${initialValues.id}`)}>
             <FontAwesomeIcon icon={faArrowLeft} className='mr-2' />
             Back
           </Button>
@@ -100,25 +71,26 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
           <Form {...form}>
             <form className='space-y-4' onSubmit={form.handleSubmit((data) => {
               const formData = new FormData();
+              formData.append('workspaceId', initialValues.workspaceId);
               if (data.name) {
                 formData.append('name', data.name);
               }
               if (data.image instanceof File) {
                 formData.append('image', data.image);
               }
-              editWorkspaceMutation.mutate(formData, {
-                onSuccess: (workspace) => {
+              editProjectMutation.mutate(formData, {
+                onSuccess: (project) => {
                   form.reset();
-                  router.push(`/workspaces/${workspace.id}`);
+                  router.push(`/workspaces/${initialValues.workspaceId}/projects/${project.id}`);
                 }
               });
             })}>
               <div className="flex flex-col gap-y-4">
                 <FormField control={form.control} name='name' render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Workspace Name</FormLabel>
+                    <FormLabel>Project Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='Enter workspace name' />
+                      <Input {...field} placeholder='Enter project name' />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,17 +111,17 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <p className="text-sm">Workspace Icon</p>
+                      <p className="text-sm">Project Icon</p>
                       <p className="text-sm text-muted-foreground">
                         JPEG, PNG, SVG, or JPG max 1MB
                       </p>
-                      <input ref={inputRef} disabled={editWorkspaceMutation.isPending} onChange={(e) => {
+                      <input ref={inputRef} disabled={editProjectMutation.isPending} onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           form.setValue('image', file);
                         }
                       }} type='file' className='hidden' accept='.jpg, .png, .svg, .jpeg' />
-                      <Button type='button' disabled={editWorkspaceMutation.isPending} variant={'teritrary'} size={'xs'} className='w-fit mt-2' onClick={() => inputRef.current?.click()}>Upload Image</Button>
+                      <Button type='button' disabled={editProjectMutation.isPending} variant={'teritrary'} size={'xs'} className='w-fit mt-2' onClick={() => inputRef.current?.click()}>Upload Image</Button>
                     </div>
 
                   </div>
@@ -158,8 +130,8 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
               </div>
               <DottedSeparator className='py-7' />
               <div className='flex items-center justify-between'>
-                <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={editWorkspaceMutation.isPending} className={cn(!onCancel && "invisible")}>Cancel</Button>
-                <Button size="lg" variant={"primary"} disabled={editWorkspaceMutation.isPending}>Save Changes</Button>
+                <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={editProjectMutation.isPending} className={cn(!onCancel && "invisible")}>Cancel</Button>
+                <Button size="lg" variant={"primary"} disabled={editProjectMutation.isPending}>Save Changes</Button>
               </div>
             </form>
           </Form>
@@ -169,41 +141,16 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
       <Card className='w-full h-full border-none shadow-none'>
         <CardContent className='p-7'>
           <div className='flex flex-col'>
-            <h3 className='font-bold'>Invite members</h3>
-            <p className="text-sm text-muted-foreground">
-              Use the invite link to add members to your workspace.
-            </p>
-            <div className='mt-4'>
-              <div className='flex items-center gap-x-2'>
-                <Input disabled value={inviteUrl} className='w-full text-ellipsis' />
-                <Button variant={'secondary'} className='size-12' onClick={copyInviteLink}>
-                  <FontAwesomeIcon icon={faCopy} />
-                </Button>
-              </div>
-            </div>
-            <DottedSeparator className='py-7' />
-            <Button className='mt-6 ml-auto' size={'sm'} variant={'destructive'} type='button' disabled={resetInviteCodeMutation.isPending} onClick={handleReset}>
-              Reset Invite Link
-            </Button>
-          </div>
-        </CardContent>
-
-      </Card>
-
-      <Card className='w-full h-full border-none shadow-none'>
-        <CardContent className='p-7'>
-          <div className='flex flex-col'>
             <h3 className='font-bold'>Danger Zone</h3>
             <p className="text-sm text-muted-foreground">
-              Deleting a workspace is irreversible and will remove all associated data
+              Deleting a project is irreversible and will remove all associated data
             </p>
             <DottedSeparator className='py-7' />
-            <Button className='mt-6 ml-auto' size={'sm'} variant={'destructive'} type='button' disabled={deleteWorkspaceMutation.isPending || editWorkspaceMutation.isPending} onClick={handleDelete}>
-              Delete workspace
+            <Button className='mt-6 ml-auto' size={'sm'} variant={'destructive'} type='button' disabled={deleteProjectMutation.isPending || editProjectMutation.isPending} onClick={handleDelete}>
+              Delete project
             </Button>
           </div>
         </CardContent>
-
       </Card>
     </div>
   )

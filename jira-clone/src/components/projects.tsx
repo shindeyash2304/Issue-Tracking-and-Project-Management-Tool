@@ -9,7 +9,7 @@ import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { components } from '@/types/api';
 import { cn } from '@/lib/utils';
 import { useCreateProjectModal } from '@/features/projects/hooks/useCreateProjectModal';
-import { useWorkspace } from '@/lib/tanstack-query/queries/useWorkspace';
+import { useWorkspace } from '@/lib/tanstack-query/queries/use-workspace';
 
 import ProjectAvatar from '@/features/projects/components/project-avatar';
 

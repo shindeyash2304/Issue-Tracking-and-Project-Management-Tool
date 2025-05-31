@@ -8,26 +8,28 @@ import lombok.*;
 import java.util.List;
 
 @Entity
+@Table(name = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Users {
     @NotNull
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID )
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
     private String imageKey;
     @NotNull
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<Members> members;
 

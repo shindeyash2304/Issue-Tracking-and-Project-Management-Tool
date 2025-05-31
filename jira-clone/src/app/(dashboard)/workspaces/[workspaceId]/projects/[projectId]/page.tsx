@@ -9,6 +9,7 @@ import { getImageUrl } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import ProjectAvatar from "@/features/projects/components/project-avatar";
+import TaskViewSwitcher from "@/features/tasks/components/task-view-switcher";
 
 
 export default async function page({ params }: { params: { projectId: string, workspaceId: string } }) {
@@ -35,6 +36,7 @@ export default async function page({ params }: { params: { projectId: string, wo
           </Button>
         </div>
       </div>
+      <TaskViewSwitcher />
     </div>
   )
 }

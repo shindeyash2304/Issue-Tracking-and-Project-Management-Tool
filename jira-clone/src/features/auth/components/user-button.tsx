@@ -3,7 +3,7 @@
 import { Loader, LogOut } from "lucide-react";
 
 import { useLogoutMutation } from "@/lib/tanstack-query/mutations/auth";
-import { useUser } from "@/lib/tanstack-query/queries/useUser";
+import { useUser } from "@/lib/tanstack-query/queries/use-user";
 
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

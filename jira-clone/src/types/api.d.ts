@@ -36,6 +36,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/tasks": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getTasks"];
+    put?: never;
+    post: operations["createTask"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/register": {
     parameters: {
       query?: never;
@@ -247,6 +263,24 @@ export interface components {
       name: string;
       imageKey?: string;
       workspace?: components["schemas"]["Workspaces"];
+      tasks?: components["schemas"]["Task"][];
+    };
+    Task: {
+      id: string;
+      name: string;
+      workspaceId: string;
+      projectId: string;
+      assigneeId: string;
+      description?: string;
+      /** Format: date-time */
+      dueDate: string;
+      /** @enum {string} */
+      taskStatus: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE" | "BACKLOG";
+      /** Format: int32 */
+      position: number;
+      workspace?: components["schemas"]["Workspaces"];
+      project?: components["schemas"]["Project"];
+      user?: components["schemas"]["Users"];
     };
     Users: {
       id: string;
@@ -255,6 +289,7 @@ export interface components {
       name: string;
       imageKey?: string;
       members: components["schemas"]["Members"][];
+      tasks?: components["schemas"]["Task"][];
     };
     Workspaces: {
       id: string;
@@ -267,6 +302,17 @@ export interface components {
     };
     AddUserDto: {
       inviteCode: string;
+    };
+    CreateTaskDto: {
+      name: string;
+      /** @enum {string} */
+      taskStatus: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE" | "BACKLOG";
+      workspaceId: string;
+      projectId: string;
+      /** Format: date-time */
+      dueDate: string;
+      assigneeId: string;
+      description?: string;
     };
     RegisterDto: {
       name: string;
@@ -287,6 +333,15 @@ export interface components {
     UpdateMemberDto: {
       /** @enum {string} */
       role: "ADMIN" | "MEMBER";
+    };
+    GetTaskDto: {
+      workspaceId: string;
+      projectId?: string;
+      assigneeId?: string;
+      /** @enum {string} */
+      taskStatus?: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE" | "BACKLOG";
+      search?: string;
+      dueDate?: string;
     };
   };
   responses: never;
@@ -368,6 +423,52 @@ export interface operations {
         };
         content: {
           "*/*": string;
+        };
+      };
+    };
+  };
+  getTasks: {
+    parameters: {
+      query: {
+        getTaskDto: components["schemas"]["GetTaskDto"];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["Task"][];
+        };
+      };
+    };
+  };
+  createTask: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTaskDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["Task"];
         };
       };
     };

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/pro-solid-svg-icons/faCirclePlus'
 
-import { useWorkspaces } from '@/lib/tanstack-query/queries/useWorkspace';
+import { useWorkspaces } from '@/lib/tanstack-query/queries/use-workspace';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

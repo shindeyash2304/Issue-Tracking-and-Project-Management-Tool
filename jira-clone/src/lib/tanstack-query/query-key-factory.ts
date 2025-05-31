@@ -30,4 +30,9 @@ export namespace QueryKeyFactory {
     export const byWorkspaceId = (workspaceId: string) => [projectsPrefix, workspaceId];
     export const byProjectId = (projectId: string) => [projectsPrefix, projectId];
   }
+
+  export namespace Tasks {
+    const taskPrefix = "tasks";
+    export const byWorkspaceId = (workspaceId: string) => [taskPrefix, workspaceId]
+  }
 }

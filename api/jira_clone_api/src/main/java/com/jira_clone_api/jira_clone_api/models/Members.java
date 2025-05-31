@@ -1,6 +1,7 @@
 package com.jira_clone_api.jira_clone_api.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jira_clone_api.jira_clone_api.enums.WorkspaceMemberRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
+@Table(name = "member")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +28,7 @@ public class Members {
     @Column(nullable = false)
     private String workspaceId;
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WorkspaceMemberRole role;
     @NotNull
@@ -36,8 +41,11 @@ public class Members {
     @JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonBackReference
     private Users user;
+    @OneToMany(mappedBy = "member")
+    @JsonManagedReference
+    private List<Task> tasks;
 
-    public Members(String userId, String workspaceId, WorkspaceMemberRole role){
+    public Members(String userId, String workspaceId, WorkspaceMemberRole role) {
         this.role = role;
         this.workspaceId = workspaceId;
         this.userId = userId;

@@ -1,16 +1,48 @@
 "use client";
 
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/pro-solid-svg-icons/faPlus'
+import { useQueryState } from 'nuqs';
+import { faLoader } from '@fortawesome/pro-solid-svg-icons/faLoader';
+
+import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
+import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
+import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { useTasks } from '@/lib/tanstack-query/queries/use-task';
+
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DottedSeparator } from '@/components/dotted-separator'
-import { useCreateTaskModal } from '../hooks/useCreateProjectModal';
+import { DataFilters } from '@/features/tasks/components/data-filters';
+import { DataTable } from '@/features/tasks/components/data-table';
+import { columns } from '@/components/columns';
 
 export default function TaskViewSwitcher() {
+  const workspaceId = useWorkspaceId();
+
+  const [{ assigneeId, dueDate, projectId, search, status }] = useTaskFilters();
+
+  const { data: tasks, isPending } = useTasks({
+    workspaceId,
+    assigneeId: assigneeId ?? undefined,
+    dueDate: undefined,
+    projectId: projectId ?? undefined,
+    search: search ?? undefined,
+    taskStatus: status ?? undefined
+  });
+
+  const [view, setView] = useQueryState("task-view", {
+    defaultValue: 'table'
+  });
+
+
+
   const { open } = useCreateTaskModal();
   return (
-    <Tabs className='flex-1 w-full border rounded-lg'>
+    <Tabs
+      defaultValue={view}
+      onValueChange={setView}
+      className='flex-1 w-full border rounded-lg'>
       <div className="h-full flex flex-col overflow-auto p-4">
         <div className='flex flex-col gap-y-2 lg:flex-row justify-between items-center'>
           <TabsList className='w-full lg:w-auto'>
@@ -30,19 +62,25 @@ export default function TaskViewSwitcher() {
           </Button>
         </div>
         <DottedSeparator className='my-4' />
-        Data filters
+        <DataFilters />
         <DottedSeparator className='my-4' />
-        <>
-          <TabsContent value='table' className='mt-0'>
-            Data Table
-          </TabsContent>
-          <TabsContent value='kanban' className='mt-0'>
-            Data Kanban
-          </TabsContent>
-          <TabsContent value='calendar' className='mt-0'>
-            Data Calendar
-          </TabsContent>
-        </>
+        {isPending ? (
+          <div className='w-full border-rounded-lg h-[200px] flex flex-col items-center justify-center'>
+            <FontAwesomeIcon icon={faLoader} className='size-5 text-muted-foreground' spin />
+          </div>
+        ) : (
+          <>
+            <TabsContent value='table' className='mt-0'>
+              <DataTable columns={columns} data={tasks ?? []} />
+            </TabsContent>
+            <TabsContent value='kanban' className='mt-0'>
+              {JSON.stringify(tasks)}
+            </TabsContent>
+            <TabsContent value='calendar' className='mt-0'>
+              {JSON.stringify(tasks)}
+            </TabsContent>
+          </>
+        )}
       </div>
     </Tabs>
   )

@@ -1,6 +1,7 @@
 package com.jira_clone_api.jira_clone_api.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,6 @@ public class Project {
     @JsonBackReference
     private Workspaces workspace;
     @OneToMany(mappedBy = "project")
-    @JsonManagedReference
+    @JsonIgnore
     private List<Task> tasks;
 }

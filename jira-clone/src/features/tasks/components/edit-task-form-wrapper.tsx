@@ -4,20 +4,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { useMembers } from "@/lib/tanstack-query/queries/use-member";
 import { useProjects } from "@/lib/tanstack-query/queries/use-projects";
+import { useTask } from "@/lib/tanstack-query/queries/use-task";
 
 import { Card, CardContent } from "@/components/ui/card";
-import CreateTaskForm from "@/features/tasks/components/create-task-form";
+import EditTaskForm from "@/features/tasks/components/edit-task-form";
 
-export function CreateTaskFormWrapper({ onCancel }: { onCancel: () => void }) {
+export function EditTaskFormWrapper({ onCancel, id }: { onCancel: () => void, id: string }) {
   const workspaceId = useWorkspaceId();
 
   const { data: projects, isPending: isProjectsPending } = useProjects(workspaceId);
   const { data: members, isPending: isMembersPending } = useMembers(workspaceId);
 
+  const { data: task, isPending: isTaskPending } = useTask(id);
+
   const projectOptions = projects?.map(({ id, name }) => ({ id, name })) ?? [];
   const memberOptions = members?.map(({ member: { id }, user: { name } }) => ({ id, name })) ?? [];
 
-  const isPending = isProjectsPending || isMembersPending;
+  const isPending = isProjectsPending || isMembersPending || isTaskPending;
 
   if (isPending) {
     return (
@@ -31,7 +34,7 @@ export function CreateTaskFormWrapper({ onCancel }: { onCancel: () => void }) {
 
   return (
     <div>
-      <CreateTaskForm memberOptions={memberOptions} projectOptions={projectOptions} onCancel={onCancel} />
+      <EditTaskForm memberOptions={memberOptions} projectOptions={projectOptions} onCancel={onCancel} initialValues={task!} />
     </div>
   )
 }

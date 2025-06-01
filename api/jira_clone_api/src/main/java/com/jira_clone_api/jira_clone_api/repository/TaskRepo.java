@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +24,5 @@ public interface TaskRepo extends JpaRepository<Task, String> {
                   AND (:search IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')))
                   AND (:dueDate IS NULL OR t.dueDate = :dueDate)
             """)
-    List<Task> findTasksByFilters(@Param("workspaceId") String workspaceId, @Param("projectId") String projectId, @Param("assigneeId") String assigneeId, @Param("taskStatus") TaskStatus taskStatus, @Param("search") String search, @Param("dueDate") String dueDate);
+    List<Task> findTasksByFilters(@Param("workspaceId") String workspaceId, @Param("projectId") String projectId, @Param("assigneeId") String assigneeId, @Param("taskStatus") TaskStatus taskStatus, @Param("search") String search, @Param("dueDate") Date dueDate);
 }

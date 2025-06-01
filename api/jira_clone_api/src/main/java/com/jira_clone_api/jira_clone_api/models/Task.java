@@ -32,6 +32,7 @@ public class Task {
     @NotNull
     private Date dueDate;
     @NotNull
+    @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
     @NotNull
     private Integer position;
@@ -41,11 +42,9 @@ public class Task {
     private Workspaces workspace;
     @ManyToOne
     @JoinColumn(name = "projectId", referencedColumnName = "id", insertable = false, updatable = false)
-    @JsonBackReference
     private Project project;
     @ManyToOne
     @JoinColumn(name = "assigneeId", referencedColumnName = "id", insertable = false, updatable = false, table = "")
-    @JsonBackReference
-    private Members member;
+    private Members assignee;
 
 }

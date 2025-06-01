@@ -148,6 +148,22 @@ export interface paths {
     patch: operations["updateInviteCode"];
     trace?: never;
   };
+  "/tasks/{taskId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getTaskById"];
+    put?: never;
+    post?: never;
+    delete: operations["deleteTask"];
+    options?: never;
+    head?: never;
+    patch: operations["updateTask"];
+    trace?: never;
+  };
   "/projects/{projectId}": {
     parameters: {
       query?: never;
@@ -263,7 +279,6 @@ export interface components {
       name: string;
       imageKey?: string;
       workspace?: components["schemas"]["Workspaces"];
-      tasks?: components["schemas"]["Task"][];
     };
     Task: {
       id: string;
@@ -280,7 +295,7 @@ export interface components {
       position: number;
       workspace?: components["schemas"]["Workspaces"];
       project?: components["schemas"]["Project"];
-      user?: components["schemas"]["Users"];
+      assignee?: components["schemas"]["Members"];
     };
     Users: {
       id: string;
@@ -288,8 +303,6 @@ export interface components {
       password: string;
       name: string;
       imageKey?: string;
-      members: components["schemas"]["Members"][];
-      tasks?: components["schemas"]["Task"][];
     };
     Workspaces: {
       id: string;
@@ -299,6 +312,7 @@ export interface components {
       inviteCode: string;
       members: components["schemas"]["Members"][];
       projects?: components["schemas"]["Project"][];
+      tasks?: components["schemas"]["Task"][];
     };
     AddUserDto: {
       inviteCode: string;
@@ -329,6 +343,16 @@ export interface components {
     LoginDto: {
       email: string;
       password: string;
+    };
+    EditTaskDto: {
+      name?: string;
+      /** @enum {string} */
+      taskStatus?: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE" | "BACKLOG";
+      /** Format: date-time */
+      dueDate?: string;
+      assigneeId?: string;
+      description?: string;
+      projectId?: string;
     };
     UpdateMemberDto: {
       /** @enum {string} */
@@ -692,6 +716,74 @@ export interface operations {
         };
         content: {
           "*/*": string;
+        };
+      };
+    };
+  };
+  getTaskById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        taskId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["Task"];
+        };
+      };
+    };
+  };
+  deleteTask: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        taskId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  updateTask: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        taskId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EditTaskDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["Task"];
         };
       };
     };

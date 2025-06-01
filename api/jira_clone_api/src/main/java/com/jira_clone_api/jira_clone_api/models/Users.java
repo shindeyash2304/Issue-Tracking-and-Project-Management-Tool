@@ -1,5 +1,6 @@
 package com.jira_clone_api.jira_clone_api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -30,7 +31,7 @@ public class Users {
     private String imageKey;
     @NotNull
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonIgnore
     private List<Members> members;
 
     public Users(String email, String password, String name) {

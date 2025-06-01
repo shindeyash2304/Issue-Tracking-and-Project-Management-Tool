@@ -1,6 +1,7 @@
 package com.jira_clone_api.jira_clone_api.controllers;
 
 import com.jira_clone_api.jira_clone_api.dto.task.CreateTaskDto;
+import com.jira_clone_api.jira_clone_api.dto.task.EditTaskDto;
 import com.jira_clone_api.jira_clone_api.dto.task.GetTaskDto;
 import com.jira_clone_api.jira_clone_api.models.Task;
 import com.jira_clone_api.jira_clone_api.models.Users;
@@ -42,6 +43,40 @@ public class TaskController {
         try {
             Users user = userService.getUserByEmail(request);
             return ResponseEntity.ok().body(taskService.getTasks(getTaskDto, user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable String taskId, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            taskService.deleteTask(taskId, user);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<Task> getTaskById(@PathVariable String taskId, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            Task task = taskService.getTaskById(taskId, user);
+            return ResponseEntity.ok().body(task);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/{taskId}")
+    public ResponseEntity<Task> updateTask(@PathVariable String taskId, @RequestBody EditTaskDto editTaskDto, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            Task updatedTask = taskService.updateTask(taskId, editTaskDto, user);
+            return ResponseEntity.ok().body(updatedTask);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

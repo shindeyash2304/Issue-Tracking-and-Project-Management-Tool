@@ -36,4 +36,7 @@ public class Workspaces {
     @OneToMany(mappedBy = "workspace")
     @JsonManagedReference
     private List<Project> projects;
+    @OneToMany(mappedBy = "workspace")
+    @JsonManagedReference
+    private List<Task> tasks;
 }

@@ -23,31 +23,31 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Users> register(@RequestBody RegisterDto user){
-        try{
+    public ResponseEntity<Users> register(@RequestBody RegisterDto user) {
+        try {
             Users createdUser = userService.register(new Users(user.getEmail(), user.getPassword(), user.getName()));
 
             return ResponseEntity.status(201).contentType(MediaType.APPLICATION_JSON).body(createdUser);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(400).body(null);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> login(@RequestBody LoginDto user){
-        Map<String,String> responseBody = new HashMap<>();
-        try{
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginDto user) {
+        Map<String, String> responseBody = new HashMap<>();
+        try {
             Cookie c = userService.verify(user.getEmail(), user.getPassword());
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.SET_COOKIE, HttpUtils.cookieToHeaderString(c));
 
-            responseBody.put("succcess", "true");
+            responseBody.put("success", "true");
             responseBody.put("message", "Login successful");
             return ResponseEntity.status(200).contentType(MediaType.APPLICATION_JSON).headers(headers).body(responseBody);
 
@@ -59,18 +59,19 @@ public class UserController {
 
 
     }
-        @GetMapping("/test")
-        public ResponseEntity<String> test() {
-            return ResponseEntity.ok("Test successful");
-        }
 
-        @GetMapping("/profile")
-        public ResponseEntity<Users> getUserProfile(HttpServletRequest request) {
-            Users user = userService.getUserByEmail(request);
-            if (user != null) {
-                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(user);
-            } else {
-                return ResponseEntity.status(404).body(null);
-            }
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test successful");
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Users> getUserProfile(HttpServletRequest request) {
+        Users user = userService.getUserByEmail(request);
+        if (user != null) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(user);
+        } else {
+            return ResponseEntity.status(404).body(null);
         }
+    }
 }

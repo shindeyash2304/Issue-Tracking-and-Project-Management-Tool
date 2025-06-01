@@ -1,6 +1,7 @@
 package com.jira_clone_api.jira_clone_api.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jira_clone_api.jira_clone_api.enums.WorkspaceMemberRole;
 import jakarta.persistence.*;
@@ -39,10 +40,9 @@ public class Members {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false)
-    @JsonBackReference
     private Users user;
-    @OneToMany(mappedBy = "member")
-    @JsonManagedReference
+    @OneToMany(mappedBy = "assignee")
+    @JsonIgnore
     private List<Task> tasks;
 
     public Members(String userId, String workspaceId, WorkspaceMemberRole role) {

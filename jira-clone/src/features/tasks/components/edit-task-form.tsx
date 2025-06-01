@@ -7,9 +7,9 @@ import { z } from 'zod'
 import { format } from 'date-fns';
 
 import { createTaskSchema, TaskStatus } from '@/features/tasks/schema';
-import { useCreateTaskMutation } from '@/lib/tanstack-query/mutations/task';
+import { useEditTaskMutation } from '@/lib/tanstack-query/mutations/task';
 import { cn } from '@/lib/utils';
-import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { Task } from '@/features/tasks/types';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DottedSeparator } from '@/components/dotted-separator'
@@ -22,24 +22,26 @@ import { SelectValue } from '@radix-ui/react-select';
 import MembersAvatar from '@/features/members/components/members-avatar';
 import ProjectAvatar from '@/features/projects/components/project-avatar';
 
-export default function CreateTaskForm({ onCancel, projectOptions, memberOptions }: { onCancel?: () => void, projectOptions: { id: string, name: string }[], memberOptions: { id: string, name: string }[] }) {
-  const workspaceId = useWorkspaceId();
+export default function EditTaskForm({ onCancel, projectOptions, memberOptions, initialValues }: { onCancel?: () => void, projectOptions: { id: string, name: string }[], memberOptions: { id: string, name: string }[], initialValues: Task }) {
 
-  const form = useForm<z.infer<typeof createTaskSchema>>({
-    resolver: zodResolver(createTaskSchema),
+  const form = useForm<Omit<z.infer<typeof createTaskSchema>, "workspaceId">>({
+    resolver: zodResolver(createTaskSchema.omit({ description: true, workspaceId: true })),
     defaultValues: {
-      workspaceId,
-      description: ""
+      name: initialValues.name,
+      projectId: initialValues.projectId,
+      assigneeId: initialValues.assigneeId,
+      status: initialValues.taskStatus as TaskStatus,
+      dueDate: initialValues.dueDate ? new Date(initialValues.dueDate) : undefined,
     }
   })
 
-  const createTaskMutation = useCreateTaskMutation();
+  const editTaskMutation = useEditTaskMutation();
 
   return (
     <Card className='w-full h-full border-none shadow-none'>
       <CardHeader className='flex p-7'>
         <CardTitle className='text-xl font-bold'>
-          Create a new Task
+          Edit a Task
         </CardTitle>
       </CardHeader>
       <div className="px-7">
@@ -49,7 +51,7 @@ export default function CreateTaskForm({ onCancel, projectOptions, memberOptions
         <Form {...form}>
           <form className='space-y-4' onSubmit={form.handleSubmit((data) => {
             console.log(data)
-            createTaskMutation.mutate({ ...data, taskStatus: data.status, dueDate: format(data.dueDate, "yyyy-MM-dd'T'HH:mm:ss.SSSX") }, {
+            editTaskMutation.mutate({ ...data, taskStatus: data.status, dueDate: format(data.dueDate, "yyyy-MM-dd'T'HH:mm:ss.SSSX"), taskId: initialValues.id }, {
               onSuccess: () => {
                 form.reset();
                 onCancel?.();
@@ -144,11 +146,8 @@ export default function CreateTaskForm({ onCancel, projectOptions, memberOptions
             </div>
             <DottedSeparator className='py-7' />
             <div className='flex items-center justify-between'>
-              <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={createTaskMutation.isPending} className={cn(!onCancel && "invisible")}>Cancel</Button>
-              <Button size="lg" variant={"primary"} type='submit' onClick={() => {
-                console.log(form.getValues());
-                // console.log(form.e)
-              }} disabled={createTaskMutation.isPending}>Create Task</Button>
+              <Button type='button' size={'lg'} variant={'secondary'} onClick={onCancel} disabled={editTaskMutation.isPending} className={cn(!onCancel && "invisible")}>Cancel</Button>
+              <Button size="lg" variant={"primary"} type='submit' disabled={editTaskMutation.isPending}>Save Changes</Button>
             </div>
           </form>
         </Form>

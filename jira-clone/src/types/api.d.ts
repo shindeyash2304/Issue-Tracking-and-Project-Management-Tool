@@ -875,9 +875,7 @@ export interface operations {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          "*/*": Record<string, never>;
-        };
+        content?: never;
       };
     };
   };

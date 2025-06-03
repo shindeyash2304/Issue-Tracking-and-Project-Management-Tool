@@ -8,8 +8,10 @@ import { useUser } from "@/lib/tanstack-query/queries/use-user";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export const UserButton = () => {
+  const router = useRouter();
   const { data: user, isPending } = useUser();
   const logoutMutation = useLogoutMutation();
 
@@ -58,7 +60,7 @@ export const UserButton = () => {
           </div>
         </div>
         <DottedSeparator className="mb-1" />
-        <DropdownMenuItem onClick={() => logoutMutation.mutate()} className="h-10 flex items-center justify-center text-amber-700 font-medium cursor-pointer">
+        <DropdownMenuItem onClick={() => logoutMutation.mutate(undefined, { onSuccess: () => router.refresh() })} className="h-10 flex items-center justify-center text-amber-700 font-medium cursor-pointer">
           <LogOut className="size-4 mr-2" />
           Log out
         </DropdownMenuItem>

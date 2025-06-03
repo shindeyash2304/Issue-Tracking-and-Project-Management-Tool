@@ -53,7 +53,7 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
 
     if (!ok) return;
 
-    deleteWorkspaceMutation.mutate(undefined);
+    deleteWorkspaceMutation.mutate(undefined, { onSuccess: () => router.push("/") });
   }
 
   const handleReset = async () => {
@@ -107,10 +107,7 @@ export default function EditWorkspaceForm({ onCancel, initialValues }: { onCance
                 formData.append('image', data.image);
               }
               editWorkspaceMutation.mutate(formData, {
-                onSuccess: (workspace) => {
-                  form.reset();
-                  router.push(`/workspaces/${workspace.id}`);
-                }
+                onSuccess: (workspace) => router.push(`/workspaces/${workspace.id}`),
               });
             })}>
               <div className="flex flex-col gap-y-4">

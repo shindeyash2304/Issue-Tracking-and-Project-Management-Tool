@@ -10,8 +10,8 @@ import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { useMembers } from "@/lib/tanstack-query/queries/use-member";
 import { useDeleteMemberMutation, useUpdateMemberMutation } from "@/lib/tanstack-query/mutations/member";
 import { useConfirm } from "@/lib/hooks/use-confirm";
-
-import { components } from "@/types/api";
+import { Member, Role } from "@/features/members/types";
+import { User } from "@/features/auth/types";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,15 +62,15 @@ export default function MembersList() {
 
 function MemberListItem({ item, confirm }: {
   item: {
-    member: components["schemas"]["Members"];
-    user: components["schemas"]["Users"];
+    member: Member;
+    user: User;
   }, confirm: () => Promise<unknown>
 }) {
 
   const updateMemberMutation = useUpdateMemberMutation(item.member.id);
-  const deleteMemberMutation = useDeleteMemberMutation(item.member.id);
+  const deleteMemberMutation = useDeleteMemberMutation(item.member.workspaceId, item.member.id);
 
-  const handleUpdateMember = (role: components["schemas"]["UpdateMemberDto"]["role"]) => {
+  const handleUpdateMember = (role: Role) => {
     updateMemberMutation.mutate({ role });
   }
 

@@ -78,12 +78,7 @@ export default function EditProjectForm({ onCancel, initialValues }: { onCancel?
               if (data.image instanceof File) {
                 formData.append('image', data.image);
               }
-              editProjectMutation.mutate(formData, {
-                onSuccess: (project) => {
-                  form.reset();
-                  router.push(`/workspaces/${initialValues.workspaceId}/projects/${project.id}`);
-                }
-              });
+              editProjectMutation.mutate(formData, { onSuccess: () => router.refresh() });
             })}>
               <div className="flex flex-col gap-y-4">
                 <FormField control={form.control} name='name' render={({ field }) => (

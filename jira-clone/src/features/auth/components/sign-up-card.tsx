@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react'
 import { useForm } from 'react-hook-form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons/faGoogle'
@@ -8,6 +7,7 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub'
 import Link from 'next/link'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation';
 
 import { signUpFormSchema } from '@/features/auth/schemas'
 import { useSignUpMutation } from '@/lib/tanstack-query/mutations/auth'
@@ -18,10 +18,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 
-
-
-
 function SignUpCard() {
+  const router = useRouter();
+
   const signUpForm = useForm<z.infer<typeof signUpFormSchema>>({
     defaultValues: {
       email: '',
@@ -52,7 +51,7 @@ function SignUpCard() {
       <CardContent className='p-7'>
         <Form {...signUpForm}>
 
-          <form className='space-y-4' onSubmit={signUpForm.handleSubmit((data) => signUpMutation.mutate(data))}>
+          <form className='space-y-4' onSubmit={signUpForm.handleSubmit((data) => signUpMutation.mutate(data, { onSuccess: () => router.push("/sign-in") }))}>
             <FormField name="email" control={signUpForm.control} render={({ field }) => (
               <FormItem>
 

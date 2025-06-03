@@ -3,28 +3,19 @@ import { TaskStatus } from "@/features/tasks/schema";
 export namespace QueryKeyFactory {
   export namespace User {
     const userPrefix = "user";
-    export const userById = (id: string) => [userPrefix, id];
-
-
-    export function profile() {
-      return [userPrefix, "profile"];
-    }
+    export const profile = () => [userPrefix, "profile"]
   }
 
   export namespace Workspace {
     const workspacePrefix = "workspace"
-    export const all = () => [workspacePrefix, "all"];
+    export const all = () => [workspacePrefix];
     export const byId = (id: string) => [workspacePrefix, id];
+    export const byIdForName = (id: string) => [workspacePrefix, id, "name"];
   }
 
   export namespace Members {
     const membersPrefix = "members";
-    export const byWorkspaceId = (workspaceId: string) => {
-      return [membersPrefix, workspaceId];
-    }
-    export const byWorkspaceIdAndUserId = (workspaceId: string, userId: string) => {
-      return [membersPrefix, workspaceId, userId];
-    }
+    export const byWorkspaceId = (workspaceId: string) => [membersPrefix, workspaceId];
   }
 
   export namespace Projects {

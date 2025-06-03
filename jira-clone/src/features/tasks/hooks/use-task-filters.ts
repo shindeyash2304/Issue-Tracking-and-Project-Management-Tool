@@ -1,7 +1,7 @@
 import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs"
-import { TaskStatus } from "../schema"
 import { useParams } from "next/navigation";
 
+import { TaskStatus } from "@/features/tasks/schema"
 
 export const useTaskFilters = () => {
   const { projectId } = useParams();

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation";
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory";
 import { paths } from "@/types/api";
@@ -14,6 +13,7 @@ export const useCreateWorkspaceMutation = () => {
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data: FormData) => {
+      toast.loading("Creating workspace...", { id: "create-workspace" });
       const response = await fetch("/api/workspaces", {
         method: "POST",
         body: data,
@@ -24,10 +24,10 @@ export const useCreateWorkspaceMutation = () => {
       return await response.json()
     },
     onSuccess: () => {
-      toast.success("Workspace created successfully")
+      toast.success("Workspace created successfully", { id: "create-workspace" });
     },
     onError: (error) => {
-      toast.error("Failed to create workspace")
+      toast.error("Failed to create workspace", { id: "create-workspace" });
     },
     onSettled: (data) => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.all() });
@@ -42,10 +42,10 @@ export const useEditWorkspaceMutation = (workspaceId: string) => {
   type RequestType = FormData;
 
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
+      toast.loading("Updating workspace...", { id: "update-workspace" });
       const response = await fetch(`/api/workspaces/${workspaceId}`, {
         method: "PATCH",
         body: data,
@@ -53,14 +53,13 @@ export const useEditWorkspaceMutation = (workspaceId: string) => {
       if (!response.ok) {
         throw new Error("Failed to create workspace");
       }
-      return await response.json()
+      return await response.json();
     },
     onSuccess: () => {
-      toast.success("Workspace updated successfully")
-      router.push(`/workspaces/${workspaceId}`);
+      toast.success("Workspace updated successfully", { id: "update-workspace" });
     },
-    onError: (error) => {
-      toast.error("Failed to update workspace")
+    onError: () => {
+      toast.error("Failed to update workspace", { id: "update-workspace" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.all() });
@@ -75,10 +74,10 @@ export const useDeleteWorkspaceMutation = (workspaceId: string) => {
   type RequestType = path["requestBody"];
 
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async () => {
+      toast.loading("Deleting workspace...", { id: "delete-workspace" });
       const response = await fetch(`/api/workspaces/${workspaceId}`, {
         method: "DELETE"
       });
@@ -88,11 +87,10 @@ export const useDeleteWorkspaceMutation = (workspaceId: string) => {
       return await response.text();
     },
     onSuccess: () => {
-      toast.success("Workspace deleted successfully");
-      router.push("/");
+      toast.success("Workspace deleted successfully", { id: "delete-workspace" });
     },
     onError: () => {
-      toast.error("Failed to delete workspace");
+      toast.error("Failed to delete workspace", { id: "delete-workspace" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.all() });
@@ -110,6 +108,7 @@ export const useResetInviteCodeMutation = (workspaceId: string) => {
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async () => {
+      toast.loading("Resetting invite code...", { id: "reset-invite-code" });
       const response = await fetch(`/api/workspaces/${workspaceId}/invite-code`, {
         method: "PATCH"
       });
@@ -119,10 +118,10 @@ export const useResetInviteCodeMutation = (workspaceId: string) => {
       return await response.text();
     },
     onSuccess: () => {
-      toast.success("Invite code reset successfully");
+      toast.success("Invite code reset successfully", { id: "reset-invite-code" });
     },
     onError: () => {
-      toast.error("Failed to reset invite code");
+      toast.error("Failed to reset invite code", { id: "reset-invite-code" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.byId(workspaceId) });
@@ -139,6 +138,7 @@ export const useJoinWorkspaceMutation = (workspaceId: string) => {
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ inviteCode }) => {
+      toast.loading("Joining workspace...", { id: "join-workspace" });
       const response = await fetch(`/api/workspaces/${workspaceId}/join`, {
         method: "POST",
         headers: {
@@ -152,11 +152,11 @@ export const useJoinWorkspaceMutation = (workspaceId: string) => {
       return await response.text();
     },
     onSuccess: () => {
-      toast.success("Joined workspace successfully");
+      toast.success("Joined workspace successfully", { id: "join-workspace" });
     }
     ,
     onError: () => {
-      toast.error("Failed to join workspace");
+      toast.error("Failed to join workspace", { id: "join-workspace" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.all() });

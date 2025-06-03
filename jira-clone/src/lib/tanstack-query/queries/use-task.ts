@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from 'axios';
+import { minutesToMilliseconds } from "date-fns";
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory"
 import { TaskStatus } from "@/features/tasks/schema";
@@ -27,7 +28,7 @@ export const useTasks = ({ workspaceId, assigneeId, dueDate, projectId, taskStat
       });
       return response.data;
     },
-    staleTime: 30 * 60 * 1000
+    staleTime: minutesToMilliseconds(30)
   })
 }
 
@@ -44,6 +45,6 @@ export const useTask = (taskId: string) => {
       });
       return response.data;
     },
-    staleTime: 30 * 60 * 1000
+    staleTime: minutesToMilliseconds(30)
   })
 };

@@ -9,7 +9,7 @@ import { useDeleteTasMutation } from "@/lib/tanstack-query/mutations/task";
 import { useConfirm } from "@/lib/hooks/use-confirm";
 import { useEditTaskModal } from "@/features/tasks/hooks/use-edit-task-modal";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function TaskActions({ children, id, projectId, workspaceId }: { id: string, projectId: string, children: ReactNode, workspaceId: string }) {
   const router = useRouter();

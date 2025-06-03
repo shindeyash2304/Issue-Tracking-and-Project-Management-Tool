@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory";
 import { paths } from "@/types/api";
+import { hoursToMilliseconds } from "date-fns";
 
 export const useUser = () => {
   type ResponseType = paths["/profile"]["get"]["responses"]["200"]["content"]["*/*"];
@@ -26,6 +27,6 @@ export const useUser = () => {
 
     },
     retry: 1,
-    staleTime: 60 * 60 * 1000, // 60 minutes
+    staleTime: hoursToMilliseconds(1)
   });
 }

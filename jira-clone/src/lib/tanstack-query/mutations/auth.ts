@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { paths } from "@/types/api";
@@ -9,10 +8,12 @@ export const useLoginMutation = () => {
   type Path = paths["/login"]["post"]
   type ResponseType = Path["responses"]["200"]["content"]["*/*"]
   type RequestType = Path["requestBody"]["content"]["application/json"]
+
   const queryClient = useQueryClient();
-  const router = useRouter();
+
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
+      toast.loading("Logging in...", { id: "login" });
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -27,12 +28,10 @@ export const useLoginMutation = () => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Logged in successfully");
-      router.refresh();
+      toast.success("Logged in successfully", { id: "login" });
     },
-    onError: (error) => {
-      toast.error("Login failed");
-      console.error("Login failed:", error);
+    onError: () => {
+      toast.error("Login failed", { id: "login" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.User.profile() })
@@ -45,10 +44,9 @@ export const useSignUpMutation = () => {
   type ResponseType = path["responses"]["200"]["content"]["*/*"]
   type RequestType = path["requestBody"]["content"]["application/json"]
 
-  const router = useRouter();
-
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
+      toast.loading("Signing up...", { id: "register" });
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -63,20 +61,20 @@ export const useSignUpMutation = () => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Signed up successfully");
-      router.push("/sign-in");
+      toast.success("Signed up successfully", { id: "register" });
     },
-    onError: (error) => {
-      toast.error("Sign up failed");
+    onError: () => {
+      toast.error("Sign up failed", { id: "register" });
     },
   })
 }
 
 export const useLogoutMutation = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
+
   return useMutation<void, Error, void>({
     mutationFn: async () => {
+      toast.loading("Logging out...", { id: "logout" });
       const response = await fetch("/api/logout", {
         method: "GET",
         credentials: "include",
@@ -86,13 +84,13 @@ export const useLogoutMutation = () => {
       }
       return await response.json();
     },
-    onError: (error) => {
-      toast.error("Logout failed");
-      console.error("Logout failed:", error);
+    onError: () => {
+      toast.error("Logout failed", { id: "logout" });
+    },
+    onSuccess: () => {
+      toast.success("Logged out successfully", { id: "logout" });
     },
     onSettled: () => {
-      toast.success("Logged out successfully");
-      router.refresh();
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.User.profile() });
       queryClient.invalidateQueries({ queryKey: QueryKeyFactory.Workspace.all() });
     }

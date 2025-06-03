@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
-import { components } from '@/types/api';
 import { cn } from '@/lib/utils';
 import { useCreateProjectModal } from '@/features/projects/hooks/useCreateProjectModal';
 import { useWorkspace } from '@/lib/tanstack-query/queries/use-workspace';
+import { type Project } from '@/features/projects/types';
 
 import ProjectAvatar from '@/features/projects/components/project-avatar';
 
@@ -31,7 +31,7 @@ export default function Projects() {
   )
 }
 
-function Project({ project }: { project: components["schemas"]["Project"] }) {
+function Project({ project }: { project: Project }) {
   const workspaceId = useWorkspaceId();
   const pathname = usePathname();
   const href = `/workspaces/${workspaceId}/projects/${project.id}`;

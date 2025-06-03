@@ -73,7 +73,7 @@ public class ProjectsController {
     }
 
     @DeleteMapping(value = "/{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable("projectId") String projectId, HttpServletRequest request) {
+    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") String projectId, HttpServletRequest request) {
         try {
             Users user = userService.getUserByEmail(request);
             projectService.deleteProject(projectId, user);

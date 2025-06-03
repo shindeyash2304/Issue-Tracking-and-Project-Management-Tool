@@ -1,5 +1,6 @@
 import { paths } from "@/types/api"
 import { useQuery } from "@tanstack/react-query"
+import { hoursToMilliseconds } from "date-fns"
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory"
 
@@ -20,7 +21,7 @@ export const useProjects = (workspaceId: string) => {
 
       return await response.json();
     },
-    staleTime: 60 * 60 * 1000, // 60 minutes
+    staleTime: hoursToMilliseconds(1),
   })
 }
 
@@ -41,6 +42,6 @@ export const useProject = (projectId: string) => {
 
       return await response.json();
     },
-    staleTime: 60 * 60 * 1000, // 60 minutes
+    staleTime: hoursToMilliseconds(1),
   })
 }

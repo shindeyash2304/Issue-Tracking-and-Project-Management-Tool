@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { hoursToMilliseconds } from "date-fns";
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory"
 import { paths } from "@/types/api"
@@ -20,7 +21,7 @@ export const useWorkspaces = () => {
 
       return await response.json();
     },
-    staleTime: 60 * 60 * 1000, // 60 minutes
+    staleTime: hoursToMilliseconds(1),
   })
 }
 
@@ -40,6 +41,26 @@ export const useWorkspace = (workspaceId: string) => {
       }
       return await response.json()
     },
-    staleTime: 60 * 60 * 1000, // 60 minutes
+    staleTime: hoursToMilliseconds(1)
+  });
+}
+
+export const useWorkspaceName = (workspaceId: string) => {
+  type path = paths["/workspaces/{workspaceId}/name"]["get"];
+  type ResponseType = path["responses"]["200"]["content"]["*/*"];
+
+  return useQuery<ResponseType, Error>({
+    queryKey: QueryKeyFactory.Workspace.byIdForName(workspaceId),
+    queryFn: async () => {
+      const response = await fetch(`/api/workspaces/${workspaceId}/name`, {
+        method: "GET",
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        throw new Error("Failed to fetch workspace name")
+      }
+      return await response.text()
+    },
+    staleTime: hoursToMilliseconds(1)
   });
 }

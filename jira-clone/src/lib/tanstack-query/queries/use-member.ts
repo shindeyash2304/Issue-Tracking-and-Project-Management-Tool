@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { QueryKeyFactory } from "@/lib/tanstack-query/query-key-factory";
 import { paths } from "@/types/api";
+import { minutesToMilliseconds } from "date-fns";
 
 export const useMembers = (workspaceId: string) => {
   type path = paths["/members"]["post"];
@@ -23,9 +24,9 @@ export const useMembers = (workspaceId: string) => {
         throw new Error("Network response was not ok");
       }
 
-      const data = await response.json();
-      return data;
-    }
+      return await response.json();
+    },
+    staleTime: minutesToMilliseconds(30)
   })
 }
 

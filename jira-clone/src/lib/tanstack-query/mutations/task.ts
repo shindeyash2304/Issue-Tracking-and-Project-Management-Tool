@@ -13,6 +13,7 @@ export const useCreateTaskMutation = () => {
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
+      toast.loading("Creating task...", { id: "create-task" });
       const response = await fetch("/api/tasks", {
         method: "POST",
         credentials: 'include',
@@ -25,10 +26,10 @@ export const useCreateTaskMutation = () => {
       return await response.json();
     },
     onSuccess() {
-      toast.success("Task created successfully");
+      toast.success("Task created successfully", { id: "create-task" });
     },
     onError: () => {
-      toast.error("Failed to create Task");
+      toast.error("Failed to create Task", { id: "create-task" });
     },
     onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({
@@ -47,6 +48,7 @@ export const useDeleteTasMutation = (workspaceId: string, projectId: string) => 
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ taskId }) => {
+      toast.loading("Deleting task...", { id: "delete-task" });
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: "DELETE",
         credentials: 'include',
@@ -59,10 +61,10 @@ export const useDeleteTasMutation = (workspaceId: string, projectId: string) => 
       return;
     },
     onSuccess() {
-      toast.success("Task deleted successfully");
+      toast.success("Task deleted successfully", { id: "delete-task" });
     },
     onError: () => {
-      toast.error("Failed to delete Task");
+      toast.error("Failed to delete Task", { id: "delete-task" });
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -82,6 +84,7 @@ export const useEditTaskMutation = () => {
 
   return useMutation<ResponseType, Error, RequestType & Params>({
     mutationFn: async (data) => {
+      toast.loading("Updating task...", { id: "update-task" });
       const response = await fetch(`/api/tasks/${data.taskId}`, {
         method: "PATCH",
         credentials: 'include',
@@ -98,10 +101,10 @@ export const useEditTaskMutation = () => {
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Task updated successfully");
+      toast.success("Task updated successfully", { id: "update-task" });
     },
     onError: () => {
-      toast.error("Failed to update Task");
+      toast.error("Failed to update Task", { id: "update-task" });
     },
     onSettled: (data, _error, vars) => {
       queryClient.invalidateQueries({
@@ -123,6 +126,7 @@ export const useBulkUpdateTaskMutation = () => {
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
+      toast.loading("Updating tasks...", { id: "bulk-update-tasks" });
       const response = await fetch("/api/tasks/bulk-update", {
         method: "PATCH",
         credentials: 'include',
@@ -135,14 +139,13 @@ export const useBulkUpdateTaskMutation = () => {
       if (!response.ok) {
         throw new Error("Failed to bulk update tasks");
       }
-
       return;
     },
     onSuccess() {
-      toast.success("Tasks updated successfully");
+      toast.success("Tasks updated successfully", { id: "bulk-update-tasks" });
     },
     onError: () => {
-      toast.error("Failed to update Tasks");
+      toast.error("Failed to update Tasks", { id: "bulk-update-tasks" });
     },
     onSettled: (_, _error, { workspaceId }) => {
       queryClient.invalidateQueries({

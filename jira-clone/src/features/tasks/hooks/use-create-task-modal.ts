@@ -1,6 +1,6 @@
-import { parseAsBoolean, parseAsJson, useQueryState } from 'nuqs';
+import { parseAsJson, useQueryState } from 'nuqs';
 import { z } from 'zod';
-import { TaskStatus } from '../schema';
+import { TaskStatus } from '@/features/tasks/schema';
 
 const schema = z.object({
   taskStatus: z.nativeEnum(TaskStatus).optional(),

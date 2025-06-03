@@ -1,5 +1,6 @@
 package com.jira_clone_api.jira_clone_api.controllers;
 
+import com.jira_clone_api.jira_clone_api.dto.task.BulkUpdateDto;
 import com.jira_clone_api.jira_clone_api.dto.task.CreateTaskDto;
 import com.jira_clone_api.jira_clone_api.dto.task.EditTaskDto;
 import com.jira_clone_api.jira_clone_api.dto.task.GetTaskDto;
@@ -77,6 +78,17 @@ public class TaskController {
             Users user = userService.getUserByEmail(request);
             Task updatedTask = taskService.updateTask(taskId, editTaskDto, user);
             return ResponseEntity.ok().body(updatedTask);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/bulk-update")
+    public ResponseEntity<Void> bulkUpdateTasks(@RequestBody BulkUpdateDto editTaskDtos, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            taskService.bulkUpdateTasks(editTaskDtos, user);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

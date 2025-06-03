@@ -94,21 +94,23 @@ export function DataFilters({ hideProjectFilter }: { hideProjectFilter?: boolean
           ))}
         </SelectContent>
       </Select>
-      <Select defaultValue={projectId ?? undefined} onValueChange={handleChangeProjectId}>
-        <SelectTrigger className="w-full lg:w-auto h-8">
-          <div className="flex items-center pr-2">
-            <FontAwesomeIcon icon={faFolder} className="size-4 mr-2" />
-            <SelectValue placeholder="All Projects" />
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Projects</SelectItem>
-          <SelectSeparator />
-          {projectOptions.map(projectOption => (
-            <SelectItem key={`project-option-${projectOption.id}`} value={projectOption.id}>{projectOption.name}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {hideProjectFilter ? null : (
+        <Select defaultValue={projectId ?? undefined} onValueChange={handleChangeProjectId}>
+          <SelectTrigger className="w-full lg:w-auto h-8">
+            <div className="flex items-center pr-2">
+              <FontAwesomeIcon icon={faFolder} className="size-4 mr-2" />
+              <SelectValue placeholder="All Projects" />
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Projects</SelectItem>
+            <SelectSeparator />
+            {projectOptions.map(projectOption => (
+              <SelectItem key={`project-option-${projectOption.id}`} value={projectOption.id}>{projectOption.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
       <DatePicker value={dueDate ? new Date(dueDate) : undefined} className="h-8 w-full lg:w-auto" placeholder="Due date(Disabled)" onChange={handleChangeDueDate} />
     </div>
   )

@@ -10,6 +10,7 @@ import { createTaskSchema, TaskStatus } from '@/features/tasks/schema';
 import { useCreateTaskMutation } from '@/lib/tanstack-query/mutations/task';
 import { cn } from '@/lib/utils';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DottedSeparator } from '@/components/dotted-separator'
@@ -24,12 +25,14 @@ import ProjectAvatar from '@/features/projects/components/project-avatar';
 
 export default function CreateTaskForm({ onCancel, projectOptions, memberOptions }: { onCancel?: () => void, projectOptions: { id: string, name: string }[], memberOptions: { id: string, name: string }[] }) {
   const workspaceId = useWorkspaceId();
+  const { isOpen } = useCreateTaskModal();
 
   const form = useForm<z.infer<typeof createTaskSchema>>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
       workspaceId,
-      description: ""
+      description: "",
+      status: isOpen ? isOpen.taskStatus : undefined
     }
   })
 

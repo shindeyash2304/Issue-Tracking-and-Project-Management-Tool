@@ -164,6 +164,22 @@ export interface paths {
     patch: operations["updateTask"];
     trace?: never;
   };
+  "/tasks/bulk-update": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations["bulkUpdateTasks"];
+    trace?: never;
+  };
   "/projects/{projectId}": {
     parameters: {
       query?: never;
@@ -353,6 +369,17 @@ export interface components {
       assigneeId?: string;
       description?: string;
       projectId?: string;
+    };
+    BulkUpdateDto: {
+      workspaceId: string;
+      tasks: components["schemas"]["BulkUpdateRecord"][];
+    };
+    BulkUpdateRecord: {
+      taskId: string;
+      /** @enum {string} */
+      taskStatus: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE" | "BACKLOG";
+      /** Format: int32 */
+      position: number;
     };
     UpdateMemberDto: {
       /** @enum {string} */
@@ -785,6 +812,28 @@ export interface operations {
         content: {
           "*/*": components["schemas"]["Task"];
         };
+      };
+    };
+  };
+  bulkUpdateTasks: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BulkUpdateDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

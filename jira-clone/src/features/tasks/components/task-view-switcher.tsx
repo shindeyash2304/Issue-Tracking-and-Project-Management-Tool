@@ -4,11 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/pro-solid-svg-icons/faPlus'
 import { useQueryState } from 'nuqs';
 import { faLoader } from '@fortawesome/pro-solid-svg-icons/faLoader';
+import { useCallback } from 'react';
 
 import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
 import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { useTasks } from '@/lib/tanstack-query/queries/use-task';
+import { TaskStatus } from '@/features/tasks/schema';
+import { useBulkUpdateTaskMutation } from '@/lib/tanstack-query/mutations/task';
 
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,11 +19,15 @@ import { DottedSeparator } from '@/components/dotted-separator'
 import { DataFilters } from '@/features/tasks/components/data-filters';
 import { DataTable } from '@/features/tasks/components/data-table';
 import { columns } from '@/components/columns';
+import DataKanban from '@/features/tasks/components/data-kanban';
+import DataCalendar from '@/features/tasks/components/data-calendar';
 
-export default function TaskViewSwitcher() {
+export default function TaskViewSwitcher({ hideProjectFilter = false }: { hideProjectFilter?: boolean }) {
   const workspaceId = useWorkspaceId();
 
   const [{ assigneeId, dueDate, projectId, search, status }] = useTaskFilters();
+
+  const bulkUpdateTaskMutation = useBulkUpdateTaskMutation();
 
   const { data: tasks, isPending } = useTasks({
     workspaceId,
@@ -35,7 +42,12 @@ export default function TaskViewSwitcher() {
     defaultValue: 'table'
   });
 
-
+  const onKanbanChange = useCallback((tasks: { id: string, position: number, status: TaskStatus }[]) => {
+    bulkUpdateTaskMutation.mutate({
+      workspaceId,
+      tasks: tasks.map(task => ({ taskStatus: task.status, taskId: task.id, position: task.position }))
+    })
+  }, [bulkUpdateTaskMutation, workspaceId]);
 
   const { open } = useCreateTaskModal();
   return (
@@ -56,13 +68,13 @@ export default function TaskViewSwitcher() {
               Calendar
             </TabsTrigger>
           </TabsList>
-          <Button onClick={open} size={'sm'} className='w-full lg:w-auto'>
+          <Button onClick={() => open()} size={'sm'} className='w-full lg:w-auto'>
             <FontAwesomeIcon icon={faPlus} className='size-4 mr-2' />
             Add
           </Button>
         </div>
         <DottedSeparator className='my-4' />
-        <DataFilters />
+        <DataFilters hideProjectFilter={hideProjectFilter} />
         <DottedSeparator className='my-4' />
         {isPending ? (
           <div className='w-full border-rounded-lg h-[200px] flex flex-col items-center justify-center'>
@@ -74,10 +86,10 @@ export default function TaskViewSwitcher() {
               <DataTable columns={columns} data={tasks ?? []} />
             </TabsContent>
             <TabsContent value='kanban' className='mt-0'>
-              {JSON.stringify(tasks)}
+              <DataKanban data={tasks ?? []} onChange={onKanbanChange} />
             </TabsContent>
             <TabsContent value='calendar' className='mt-0'>
-              {JSON.stringify(tasks)}
+              <DataCalendar tasks={tasks ?? []} />
             </TabsContent>
           </>
         )}

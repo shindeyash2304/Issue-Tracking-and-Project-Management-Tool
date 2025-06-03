@@ -113,3 +113,41 @@ export const useEditTaskMutation = () => {
     }
   });
 };
+
+export const useBulkUpdateTaskMutation = () => {
+  type path = paths["/tasks/bulk-update"]["patch"];
+  type ResponseType = path["responses"]["200"]["content"];
+  type RequestType = path["requestBody"]["content"]["application/json"];
+
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseType, Error, RequestType>({
+    mutationFn: async (data) => {
+      const response = await fetch("/api/tasks/bulk-update", {
+        method: "PATCH",
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to bulk update tasks");
+      }
+
+      return;
+    },
+    onSuccess() {
+      toast.success("Tasks updated successfully");
+    },
+    onError: () => {
+      toast.error("Failed to update Tasks");
+    },
+    onSettled: (_, _error, { workspaceId }) => {
+      queryClient.invalidateQueries({
+        queryKey: QueryKeyFactory.Tasks.byWorkspaceId(workspaceId),
+      });
+    }
+  });
+}

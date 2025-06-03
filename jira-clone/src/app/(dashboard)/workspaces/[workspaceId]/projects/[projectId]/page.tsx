@@ -36,7 +36,7 @@ export default async function page({ params }: { params: { projectId: string, wo
           </Button>
         </div>
       </div>
-      <TaskViewSwitcher />
+      <TaskViewSwitcher hideProjectFilter />
     </div>
   )
 }

@@ -1,13 +1,12 @@
 package com.jira_clone_api.jira_clone_api.service;
 
-import com.jira_clone_api.jira_clone_api.dto.task.CreateTaskDto;
-import com.jira_clone_api.jira_clone_api.dto.task.EditTaskDto;
-import com.jira_clone_api.jira_clone_api.dto.task.GetTaskDto;
+import com.jira_clone_api.jira_clone_api.dto.task.*;
 import com.jira_clone_api.jira_clone_api.models.*;
 import com.jira_clone_api.jira_clone_api.repository.MembersRepo;
 import com.jira_clone_api.jira_clone_api.repository.ProjectRepo;
 import com.jira_clone_api.jira_clone_api.repository.TaskRepo;
 import com.jira_clone_api.jira_clone_api.repository.WorkspacesRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -156,6 +155,37 @@ public class TaskService {
         }
 
         return taskRepo.save(existingTask);
+    }
+
+    @Transactional
+    public void bulkUpdateTasks(BulkUpdateDto bulkUpdateDto, Users user) {
+        Optional<Workspaces> workspace = workspacesRepo.findById(bulkUpdateDto.getWorkspaceId());
+
+        if (workspace.isEmpty()) {
+            throw new RuntimeException("Workspace not found");
+        }
+        if (workspace.get().getMembers().stream().noneMatch(member -> member.getUserId().equals(user.getId()))) {
+            throw new RuntimeException("User not part of workspace");
+        }
+
+        for (BulkUpdateRecord updateObject : bulkUpdateDto.getTasks()) {
+            Optional<Task> task = taskRepo.findById(updateObject.getTaskId());
+
+            if (task.isEmpty()) {
+                throw new RuntimeException("Task not found: " + updateObject.getTaskId());
+            }
+
+            Task existingTask = task.get();
+
+            if (updateObject.getTaskStatus() != null) {
+                existingTask.setTaskStatus(updateObject.getTaskStatus());
+            }
+            if (updateObject.getPosition() != null) {
+                existingTask.setPosition(updateObject.getPosition());
+            }
+
+            taskRepo.save(existingTask);
+        }
     }
 
     private static Task getTask(CreateTaskDto createTaskDto, Task highestPositionTask) {

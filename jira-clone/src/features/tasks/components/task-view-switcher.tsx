@@ -32,7 +32,7 @@ export default function TaskViewSwitcher({ hideProjectFilter = false }: { hidePr
   const { data: tasks, isPending } = useTasks({
     workspaceId,
     assigneeId: assigneeId ?? undefined,
-    dueDate: undefined,
+    dueDate: dueDate ?? undefined,
     projectId: projectId ?? undefined,
     search: search ?? undefined,
     taskStatus: status ?? undefined

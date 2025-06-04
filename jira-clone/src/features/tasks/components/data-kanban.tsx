@@ -86,7 +86,7 @@ export default function DataKanban({ data, onChange }: { data: Task[], onChange:
       }
 
       //Create new task object with updated status if moved to a different column
-      const updatedMovedTasks = sourceStatus !== destinationStatus ? { ...movedTask, status: destinationStatus } : movedTask;
+      const updatedMovedTasks = sourceStatus !== destinationStatus ? { ...movedTask, taskStatus: destinationStatus } : movedTask;
 
       //Update the task in the source column
       newTasks[sourceStatus] = sourceColumn;

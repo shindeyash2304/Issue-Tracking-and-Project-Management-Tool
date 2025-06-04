@@ -64,3 +64,22 @@ export const useWorkspaceName = (workspaceId: string) => {
     staleTime: hoursToMilliseconds(1)
   });
 }
+
+export const useWorkspaceAnalytics = (workspaceId: string) => {
+  type path = paths["/workspaces/{workspaceId}/analytics"]["get"];
+  type ResponseType = path["responses"]["200"]["content"]["*/*"]
+
+  return useQuery<ResponseType, Error>({
+    queryKey: QueryKeyFactory.Workspace.byIdForAnalytics(workspaceId),
+    queryFn: async () => {
+      const response = await fetch(`/api/workspaces/${workspaceId}/analytics`, {
+        method: "GET",
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch workspace analytics");
+      }
+      return await response.json();
+    }
+  })
+}

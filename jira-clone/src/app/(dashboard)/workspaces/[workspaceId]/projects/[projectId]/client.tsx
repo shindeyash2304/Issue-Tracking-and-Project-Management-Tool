@@ -4,7 +4,7 @@ import Link from "next/link";
 import { faPencil } from "@fortawesome/pro-solid-svg-icons/faPencil";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useProject } from "@/lib/tanstack-query/queries/use-projects";
+import { useProject, useProjectAnalytics } from "@/lib/tanstack-query/queries/use-projects";
 import { getImageUrl } from "@/lib/utils";
 
 import PageError from "@/components/page-error";
@@ -12,17 +12,21 @@ import PageLoader from "@/components/page-loader";
 import { Button } from "@/components/ui/button";
 import ProjectAvatar from "@/features/projects/components/project-avatar";
 import TaskViewSwitcher from "@/features/tasks/components/task-view-switcher";
+import { Analytics } from "@/features/projects/analytics";
 
 export function ProjectPageClient({ projectId, workspaceId }: { projectId: string, workspaceId: string }) {
 
   const { data: project, isPending, isError, error } = useProject(projectId);
+  const { data: analytics, isPending: isAnalyticsPending, isSuccess: isAnalyticsSuccess } = useProjectAnalytics(projectId);
 
-  if (isPending) {
+  if (isPending || isAnalyticsPending) {
     return <PageLoader />;
   }
 
   if (isError) {
-    return <PageError message={error.message} />;
+    if (error) {
+      return <PageError message={error.message} />;
+    }
   }
 
   return (
@@ -41,6 +45,7 @@ export function ProjectPageClient({ projectId, workspaceId }: { projectId: strin
           </Button>
         </div>
       </div>
+      {isAnalyticsSuccess ? <Analytics analytics={analytics} /> : null}
       <TaskViewSwitcher hideProjectFilter />
     </div>
   )

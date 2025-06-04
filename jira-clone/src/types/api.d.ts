@@ -228,6 +228,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/workspaces/{workspaceId}/analytics": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getWorkspaceAnalytics"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/test": {
     parameters: {
       query?: never;
@@ -236,6 +252,22 @@ export interface paths {
       cookie?: never;
     };
     get: operations["test"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/projects/{projectId}/analytics": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getProjectAnalytics"];
     put?: never;
     post?: never;
     delete?: never;
@@ -288,6 +320,8 @@ export interface components {
       role: "ADMIN" | "MEMBER";
       workspace: components["schemas"]["Workspaces"];
       user: components["schemas"]["Users"];
+      /** Format: date-time */
+      createdAt: string;
     };
     Project: {
       id: string;
@@ -295,6 +329,8 @@ export interface components {
       name: string;
       imageKey?: string;
       workspace?: components["schemas"]["Workspaces"];
+      /** Format: date-time */
+      createdAt: string;
     };
     Task: {
       id: string;
@@ -312,6 +348,8 @@ export interface components {
       workspace?: components["schemas"]["Workspaces"];
       project?: components["schemas"]["Project"];
       assignee?: components["schemas"]["Members"];
+      /** Format: date-time */
+      createdAt: string;
     };
     Users: {
       id: string;
@@ -319,6 +357,8 @@ export interface components {
       password: string;
       name: string;
       imageKey?: string;
+      /** Format: date-time */
+      createdAt: string;
     };
     Workspaces: {
       id: string;
@@ -329,6 +369,8 @@ export interface components {
       members: components["schemas"]["Members"][];
       projects?: components["schemas"]["Project"][];
       tasks?: components["schemas"]["Task"][];
+      /** Format: date-time */
+      createdAt: string;
     };
     AddUserDto: {
       inviteCode: string;
@@ -384,6 +426,28 @@ export interface components {
     UpdateMemberDto: {
       /** @enum {string} */
       role: "ADMIN" | "MEMBER";
+    };
+    AnalyticsDto: {
+      /** Format: int32 */
+      taskCount: number;
+      /** Format: int32 */
+      taskDifference: number;
+      /** Format: int32 */
+      assignedTaskCount: number;
+      /** Format: int32 */
+      assignedTaskDifference: number;
+      /** Format: int32 */
+      completedTaskCount: number;
+      /** Format: int32 */
+      completedTaskDifference: number;
+      /** Format: int32 */
+      incompleteTaskCount: number;
+      /** Format: int32 */
+      incompleteTaskDifference: number;
+      /** Format: int32 */
+      overdueTaskCount: number;
+      /** Format: int32 */
+      overdueTaskDifference: number;
     };
     GetTaskDto: {
       workspaceId: string;
@@ -980,6 +1044,28 @@ export interface operations {
       };
     };
   };
+  getWorkspaceAnalytics: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        workspaceId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["AnalyticsDto"];
+        };
+      };
+    };
+  };
   test: {
     parameters: {
       query?: never;
@@ -996,6 +1082,28 @@ export interface operations {
         };
         content: {
           "*/*": string;
+        };
+      };
+    };
+  };
+  getProjectAnalytics: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        projectId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "*/*": components["schemas"]["AnalyticsDto"];
         };
       };
     };

@@ -1,5 +1,6 @@
 package com.jira_clone_api.jira_clone_api.controllers;
 
+import com.jira_clone_api.jira_clone_api.dto.AnalyticsDto;
 import com.jira_clone_api.jira_clone_api.models.Project;
 import com.jira_clone_api.jira_clone_api.models.Users;
 import com.jira_clone_api.jira_clone_api.service.ProjectService;
@@ -78,6 +79,17 @@ public class ProjectsController {
             Users user = userService.getUserByEmail(request);
             projectService.deleteProject(projectId, user);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/{projectId}/analytics")
+    public ResponseEntity<AnalyticsDto> getProjectAnalytics(@PathVariable("projectId") String projectId, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            return ResponseEntity.ok().body(projectService.getProjectAnalytics(projectId, user));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.internalServerError().build();

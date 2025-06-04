@@ -10,7 +10,6 @@ export default async function TasksPage() {
     redirect("/sign-in");
   }
   return (
-    // Todo: update status on kanban drag and drop not working
     <div className="flex flex-col h-full">
       <TaskViewSwitcher />
     </div>

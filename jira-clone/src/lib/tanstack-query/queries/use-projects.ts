@@ -45,3 +45,24 @@ export const useProject = (projectId: string) => {
     staleTime: hoursToMilliseconds(1),
   })
 }
+
+export const useProjectAnalytics = (projectId: string) => {
+  type path = paths["/projects/{projectId}/analytics"]["get"];
+  type ResponseType = path["responses"]["200"]["content"]["*/*"];
+
+  return useQuery<ResponseType, Error>({
+    queryKey: QueryKeyFactory.Projects.forProjectAnalytics(projectId),
+    queryFn: async () => {
+      const response = await fetch(`/api/projects/${projectId}/analytics`, {
+        method: "GET",
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        throw new Error("Failed to fetch project analytics");
+      }
+
+      return await response.json();
+    },
+    staleTime: hoursToMilliseconds(1),
+  })
+};

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,15 @@ public class Users {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Members> members;
+    @NotNull
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
 
     public Users(String email, String password, String name) {
         this.email = email;

@@ -1,5 +1,6 @@
 package com.jira_clone_api.jira_clone_api.controllers;
 
+import com.jira_clone_api.jira_clone_api.dto.AnalyticsDto;
 import com.jira_clone_api.jira_clone_api.dto.workspaces.AddUserDto;
 import com.jira_clone_api.jira_clone_api.models.Users;
 import com.jira_clone_api.jira_clone_api.models.Workspaces;
@@ -37,20 +38,20 @@ public class WorkspacesController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Workspaces>> getWorkspaces(HttpServletRequest request){
+    public ResponseEntity<List<Workspaces>> getWorkspaces(HttpServletRequest request) {
         Users user = userService.getUserByEmail(request);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspacesService.getWorkspaces(user));
     }
 
     @PatchMapping(value = "/{workspaceId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Workspaces> updateWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam(value = "name", required = false) String workspaceName, @RequestParam(value = "image", required = false) MultipartFile image, HttpServletRequest request){
-        try{
+    public ResponseEntity<Workspaces> updateWorkspace(@PathVariable("workspaceId") String workspaceId, @RequestParam(value = "name", required = false) String workspaceName, @RequestParam(value = "image", required = false) MultipartFile image, HttpServletRequest request) {
+        try {
             Users user = userService.getUserByEmail(request);
             Workspaces updatedWorkspace = workspacesService.updateWorkspace(workspaceId, workspaceName, image, user);
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(updatedWorkspace);
-        } catch(Exception e){
-            if(Objects.equals(e.getMessage(), "Unauthorised")){
-            return ResponseEntity.status(403).body(null);
+        } catch (Exception e) {
+            if (Objects.equals(e.getMessage(), "Unauthorised")) {
+                return ResponseEntity.status(403).body(null);
             }
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(null);
@@ -58,27 +59,24 @@ public class WorkspacesController {
     }
 
     @GetMapping(value = "/{workspaceId}")
-    public ResponseEntity<Workspaces> getWorkspaceById(@PathVariable("workspaceId") String workspaceId, HttpServletRequest request){
+    public ResponseEntity<Workspaces> getWorkspaceById(@PathVariable("workspaceId") String workspaceId, HttpServletRequest request) {
         Users user = userService.getUserByEmail(request);
         try {
-            return workspacesService.getWorkspaceById(workspaceId, user)
-                    .map(workspace -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspace))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            return workspacesService.getWorkspaceById(workspaceId, user).map(workspace -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspace)).orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
 
     @DeleteMapping(value = "/{workspaceId}")
-    public ResponseEntity<String> deleteWorkspace(@PathVariable("workspaceId") String workspaceId,HttpServletRequest request){
+    public ResponseEntity<String> deleteWorkspace(@PathVariable("workspaceId") String workspaceId, HttpServletRequest request) {
         Users user = userService.getUserByEmail(request);
-        try{
-        workspacesService.deleteWorkspace(workspaceId, user);
-        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Workspace deleted successfully");
-        } catch (Exception e){
+        try {
+            workspacesService.deleteWorkspace(workspaceId, user);
+            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Workspace deleted successfully");
+        } catch (Exception e) {
             System.out.println(e);
-            return ResponseEntity.internalServerError()
-                    .body("Failed to delete workspace: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Failed to delete workspace: " + e.getMessage());
         }
     }
 
@@ -102,7 +100,7 @@ public class WorkspacesController {
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("Joined workspace successfully");
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            if(e.getMessage().equals("Invalid workspace or invite code") || e.getMessage().equals("User already a member of this workspace")){
+            if (e.getMessage().equals("Invalid workspace or invite code") || e.getMessage().equals("User already a member of this workspace")) {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
             return ResponseEntity.internalServerError().body("Failed to join workspace: " + e.getMessage());
@@ -114,10 +112,20 @@ public class WorkspacesController {
         Users user = userService.getUserByEmail(request);
         try {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(workspacesService.getWorkspaceName(workspaceId));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.internalServerError().body("Failed to get workspace name: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{workspaceId}/analytics")
+    public ResponseEntity<AnalyticsDto> getWorkspaceAnalytics(@PathVariable("workspaceId") String workspaceId, HttpServletRequest request) {
+        try {
+            Users user = userService.getUserByEmail(request);
+            return ResponseEntity.ok().body(workspacesService.getWorkspaceAnalytics(workspaceId, user));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 

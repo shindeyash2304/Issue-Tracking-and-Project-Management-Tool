@@ -11,6 +11,7 @@ export namespace QueryKeyFactory {
     export const all = () => [workspacePrefix];
     export const byId = (id: string) => [workspacePrefix, id];
     export const byIdForName = (id: string) => [workspacePrefix, id, "name"];
+    export const byIdForAnalytics = (workspaceId: string) => [workspacePrefix, workspaceId, "analytics"];
   }
 
   export namespace Members {
@@ -22,6 +23,7 @@ export namespace QueryKeyFactory {
     const projectsPrefix = "projects";
     export const byWorkspaceId = (workspaceId: string) => [projectsPrefix, workspaceId];
     export const byProjectId = (projectId: string) => [projectsPrefix, projectId];
+    export const forProjectAnalytics = (projectId: string) => [projectsPrefix, projectId, "analytics"];
   }
 
   export namespace Tasks {

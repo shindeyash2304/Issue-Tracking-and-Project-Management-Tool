@@ -46,5 +46,14 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assigneeId", referencedColumnName = "id", insertable = false, updatable = false, table = "")
     private Members assignee;
+    @NotNull
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
 
 }

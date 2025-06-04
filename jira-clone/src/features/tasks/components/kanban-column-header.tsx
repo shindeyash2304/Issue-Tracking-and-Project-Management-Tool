@@ -1,7 +1,7 @@
 
 import { ReactNode } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faCircleDashed} from '@fortawesome/pro-solid-svg-icons/faCircleDashed';
+import { faCircleDashed } from '@fortawesome/pro-solid-svg-icons/faCircleDashed';
 import { faCircle } from '@fortawesome/pro-regular-svg-icons/faCircle';
 import { CircleDotDashedIcon } from 'lucide-react';
 import { faCircleCheck } from '@fortawesome/pro-regular-svg-icons/faCircleCheck';
@@ -22,9 +22,9 @@ const statusIconMap: Record<TaskStatus, ReactNode> = {
   [TaskStatus.TODO]: <FontAwesomeIcon icon={faCircle} className='size-[18px] text-red-400' />
 }
 
-export default function KanbanColumnHeader({board, taskCount}:{taskCount: number, board: TaskStatus}) {
+export default function KanbanColumnHeader({ board, taskCount }: { taskCount: number, board: TaskStatus }) {
 
-  const {open} = useCreateTaskModal();
+  const { open } = useCreateTaskModal();
 
   const icon = statusIconMap[board];
   return (
@@ -38,7 +38,6 @@ export default function KanbanColumnHeader({board, taskCount}:{taskCount: number
           {taskCount}
         </div>
       </div>
-      {/* Todo: Customize logic to set task status when clicked in a section */}
       <Button className='size-5' size="icon" variant={'ghost'} onClick={() => open(board)}>
         <FontAwesomeIcon icon={faPlus} className='size-4 text-neutral-500' />
       </Button>

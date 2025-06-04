@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -39,4 +40,14 @@ public class Workspaces {
     @OneToMany(mappedBy = "workspace")
     @JsonManagedReference
     private List<Task> tasks;
+    @NotNull
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
+
 }

@@ -6,18 +6,23 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8080/:path*", // Proxy to Backend
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`, // Proxy to Backend
       },
     ];
   },
   images: {
-    remotePatterns: [{
-      protocol: 'http',
-      hostname: 'localhost',
-      port: "8080",
-      pathname: "/image/**",
-      search: ''
-    }]
+    remotePatterns: [
+      process.env.NODE_ENV === "development" ?
+        {
+          protocol: 'http',
+          hostname: 'localhost',
+          port: "8080",
+          pathname: "/image/**",
+        } : {
+          protocol: 'https',
+          hostname: (process.env.NEXT_PUBLIC_API_URL)?.slice(7) ?? '',
+          pathname: "/image/**"
+        }]
   }
 };
 

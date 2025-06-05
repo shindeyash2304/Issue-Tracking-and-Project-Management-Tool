@@ -19,7 +19,7 @@ export default function MobileSidebar() {
     , [pathname]);
 
   return (
-    <Sheet modal={false}>
+    <Sheet modal={false} open={open} onOpenChange={(open) => setOpen(open)}>
       <SheetTrigger asChild>
         <Button variant={"secondary"} className='lg:hidden'>
           <FontAwesomeIcon icon={faBars} className='size-4 text-neutral-500' />

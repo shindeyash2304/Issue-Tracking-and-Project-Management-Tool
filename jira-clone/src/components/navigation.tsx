@@ -11,6 +11,7 @@ import { faGear as faGearRegular } from '@fortawesome/pro-regular-svg-icons/faGe
 import { faGear as faGearSolid } from '@fortawesome/pro-solid-svg-icons/faGear'
 import { faUsers as faUsersSolid } from '@fortawesome/pro-solid-svg-icons/faUsers'
 import { faUsers as faUsersRegular } from '@fortawesome/pro-regular-svg-icons/faUsers'
+import { type IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 import { cn } from '@/lib/utils';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
@@ -51,7 +52,7 @@ export default function Navigation() {
   )
 }
 
-function NavigationItem({ label, href, outlineIcon, activeIcon }: { label: string, href: string, outlineIcon: any, activeIcon: any }) {
+function NavigationItem({ label, href, outlineIcon, activeIcon }: { label: string, href: string, outlineIcon: IconDefinition, activeIcon: IconDefinition }) {
   const workspaceId = useWorkspaceId();
   const pathname = usePathname();
   const fullHref = `/workspaces/${workspaceId}/${href}`

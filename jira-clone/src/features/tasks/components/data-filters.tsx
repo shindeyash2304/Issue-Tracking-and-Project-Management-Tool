@@ -20,7 +20,7 @@ export function DataFilters({ hideProjectFilter }: { hideProjectFilter?: boolean
   const { data: projects, isPending: isProjectsPending } = useProjects(workspaceId);
   const { data: members, isPending: isMembersPending } = useMembers(workspaceId);
 
-  const [{ assigneeId, dueDate, projectId, search, status }, setTaskFilters] = useTaskFilters();
+  const [{ assigneeId, dueDate, projectId, status }, setTaskFilters] = useTaskFilters();
 
   const isPending = isProjectsPending || isMembersPending;
 
@@ -56,8 +56,8 @@ export function DataFilters({ hideProjectFilter }: { hideProjectFilter?: boolean
   };
 
   const handleChangeDueDate = (value: Date) => {
-    // setTaskFilters({dueDate: format(value, "yyyy-MM-dd'T'HH:mm:ss.SSSX")})
-    //Todo: Fix with api
+    setTaskFilters({ dueDate: format(value, "yyyy-MM-dd'T'HH:mm:ss") })
+    // Todo: Fix with api
   };
 
   return (
@@ -111,7 +111,7 @@ export function DataFilters({ hideProjectFilter }: { hideProjectFilter?: boolean
           </SelectContent>
         </Select>
       )}
-      <DatePicker value={dueDate ? new Date(dueDate) : undefined} className="h-8 w-full lg:w-auto" placeholder="Due date(Disabled)" onChange={handleChangeDueDate} />
+      <DatePicker value={dueDate ? new Date(dueDate) : undefined} className="h-8 w-full lg:w-auto" placeholder="Due date" onChange={handleChangeDueDate} />
     </div>
   )
 

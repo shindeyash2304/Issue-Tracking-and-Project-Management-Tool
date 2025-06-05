@@ -36,7 +36,7 @@ export default function TaskBreadcrumbs({ task }: { task: Task }) {
   return (
     <div className='flex items-center gap-x-2'>
       <ConfirmDialog />
-      <ProjectAvatar name={task.project?.name!} imageUrl={task.project?.imageKey} className='size-6 lg:size-8' />
+      <ProjectAvatar name={task.project?.name ?? ''} imageUrl={task.project?.imageKey} className='size-6 lg:size-8' />
       <Link href={`/workspaces/${task.workspaceId}`}>
         <p className='text-sm lg:text-lg font-semibold text-muted-foreground hover:opacity-75 transition'>
           {task.project?.name}

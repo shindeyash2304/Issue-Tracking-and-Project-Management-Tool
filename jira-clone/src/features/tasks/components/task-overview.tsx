@@ -29,7 +29,7 @@ export function TaskOverview({ task }: { task: Task }) {
         <DottedSeparator className='my-4' />
         <div className='flex flex-col gap-y-4'>
           <OverviewProperty label='Assignee'>
-            <MembersAvatar name={task.assignee?.user.name!} className='size-6' />
+            <MembersAvatar name={task.assignee?.user.name ?? ''} className='size-6' />
             <p className='text-sm font-medium'>{task.assignee?.user.name}</p>
           </OverviewProperty>
           <OverviewProperty label='Due Date'>

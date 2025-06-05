@@ -56,7 +56,7 @@ export const columns: ColumnDef<Task>[] = [
       console.log(row.original)
       return (
         <div className='flex items-center gap-x-2 text-sm font-medium'>
-          <ProjectAvatar name={project?.name!} className='size-6' imageUrl={project?.imageKey} />
+          <ProjectAvatar name={project?.name ?? ""} className='size-6' imageUrl={project?.imageKey} />
           <p className='line-clamp-1'>{project?.name}</p>
         </div>
       )
@@ -79,7 +79,7 @@ export const columns: ColumnDef<Task>[] = [
       const assignee = row.original.assignee;
       return (
         <div className='flex items-center gap-x-2 text-sm font-medium'>
-          <MembersAvatar name={assignee?.user.name!} className='size-6' />
+          <MembersAvatar name={assignee?.user.name ?? ''} className='size-6' />
           <p className='line-clamp-1'>{assignee?.user.name}</p>
         </div>
       )

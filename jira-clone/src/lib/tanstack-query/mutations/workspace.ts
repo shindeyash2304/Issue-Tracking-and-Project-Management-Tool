@@ -26,7 +26,7 @@ export const useCreateWorkspaceMutation = () => {
     onSuccess: () => {
       toast.success("Workspace created successfully", { id: "create-workspace" });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Failed to create workspace", { id: "create-workspace" });
     },
     onSettled: (data) => {

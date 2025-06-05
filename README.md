@@ -1,1 +1,1 @@
-# Issue-Tracking-and-Project-Management-Tool
+# TaskEasy
